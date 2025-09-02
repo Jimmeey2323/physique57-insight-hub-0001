@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { SectionLayout } from '@/components/layout/SectionLayout';
 import { ClassAttendanceSection } from '@/components/dashboard/ClassAttendanceSection';
 import { RefinedLoader } from '@/components/ui/RefinedLoader';
-import { useSessionsData } from '@/hooks/useSessionsData';
+import { useRecurringSessionsData } from '@/hooks/useRecurringSessionsData';
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Home, Calendar } from 'lucide-react';
 import { Footer } from '@/components/ui/footer';
 
 const ClassAttendance = () => {
-  const { loading } = useSessionsData();
+  const { loading } = useRecurringSessionsData();
   const { isLoading, setLoading } = useGlobalLoading();
   const navigate = useNavigate();
 

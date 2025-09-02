@@ -16,7 +16,7 @@ import { ClientConversionYearOnYearTable } from './ClientConversionYearOnYearTab
 import { SourceDataModal } from '@/components/ui/SourceDataModal';
 import { DrillDownModal } from './DrillDownModal';
 import { Button } from '@/components/ui/button';
-import { Eye, BarChart3, Users, Target, TrendingUp } from 'lucide-react';
+import { Eye, BarChart3, Users, Target, TrendingUp, MapPin } from 'lucide-react';
 import { NewClientData, NewClientFilterOptions } from '@/types/dashboard';
 import { formatCurrency, formatNumber, formatPercentage } from '@/utils/formatters';
 import { getPreviousMonthDateRange } from '@/utils/dateUtils';
@@ -124,7 +124,7 @@ export const NewClientSection: React.FC<NewClientSectionProps> = ({
     return filtered;
   };
 
-  const filteredData = useMemo(() => applyFilters(data || []), [data, filters]);
+  const [selectedLocation, setSelectedLocation] = useState('all');
 
   // Get unique values for filters (only 3 main locations)
   const uniqueLocations = useMemo(() => {
@@ -140,6 +140,30 @@ export const NewClientSection: React.FC<NewClientSectionProps> = ({
     });
     return Array.from(locations).filter(Boolean);
   }, [data]);
+
+  const filteredData = useMemo(() => {
+    let filtered = applyFilters(data || []);
+    
+    // Apply location tab filter
+    if (selectedLocation !== 'all') {
+      filtered = filtered.filter(item => 
+        item.firstVisitLocation === selectedLocation || 
+        item.homeLocation === selectedLocation
+      );
+    }
+    
+    return filtered;
+  }, [data, filters, selectedLocation]);
+
+  // Create location tabs data
+  const locationTabs = [
+    { id: 'all', name: 'All Locations', fullName: 'All Locations' },
+    ...uniqueLocations.map(location => ({
+      id: location,
+      name: location.includes(',') ? location.split(',')[0] : location,
+      fullName: location
+    }))
+  ];
 
   const uniqueTrainers = useMemo(() => {
     const trainers = new Set<string>();
@@ -164,20 +188,46 @@ export const NewClientSection: React.FC<NewClientSectionProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* Filter Section - Using Enhanced Filter */}
-      <EnhancedClientConversionFilterSection
-        filters={filters}
-        onFiltersChange={setFilters}
-        locations={uniqueLocations}
-        trainers={uniqueTrainers}
-        membershipTypes={uniqueMembershipTypes}
-      />
+      {/* Location Tabs */}
+      <Tabs value={selectedLocation} onValueChange={setSelectedLocation} className="w-full">
+        <div className="flex justify-center mb-8">
+          <TabsList className="bg-white/90 backdrop-blur-sm p-2 rounded-2xl shadow-xl border-0 grid w-full max-w-4xl overflow-hidden" style={{ gridTemplateColumns: `repeat(${locationTabs.length}, 1fr)` }}>
+            {locationTabs.map(location => (
+              <TabsTrigger 
+                key={location.id} 
+                value={location.id} 
+                className="relative rounded-xl px-6 py-4 font-semibold text-sm transition-all duration-300 ease-out hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-50"
+              >
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  <div className="text-center">
+                    <div className="font-bold">{location.name}</div>
+                    {location.name !== location.fullName && location.fullName.includes(',') && (
+                      <div className="text-xs opacity-80">{location.fullName.split(',')[1]?.trim()}</div>
+                    )}
+                  </div>
+                </div>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
-      {/* Enhanced Metrics using filtered data */}
-      <EnhancedClientConversionMetrics data={filteredData} />
+        {locationTabs.map(location => (
+          <TabsContent key={location.id} value={location.id} className="space-y-8">
+            {/* Filter Section - Using Enhanced Filter */}
+            <EnhancedClientConversionFilterSection
+              filters={filters}
+              onFiltersChange={setFilters}
+              locations={uniqueLocations}
+              trainers={uniqueTrainers}
+              membershipTypes={uniqueMembershipTypes}
+            />
 
-      {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            {/* Enhanced Metrics using filtered data */}
+            <EnhancedClientConversionMetrics data={filteredData} />
+
+            {/* Main Content Tabs */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <Card className="bg-white shadow-sm border border-gray-200">
           <CardContent className="p-4">
             <TabsList className="grid w-full grid-cols-6 bg-gray-100 p-1 rounded-lg">
@@ -233,6 +283,9 @@ export const NewClientSection: React.FC<NewClientSectionProps> = ({
         <TabsContent value="detailed" className="space-y-8">
           <ClientConversionDataTable data={filteredData} onItemClick={handleItemClick} />
         </TabsContent>
+            </Tabs>
+          </TabsContent>
+        ))}
       </Tabs>
 
       {/* Modals */}

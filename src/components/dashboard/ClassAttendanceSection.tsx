@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp, BarChart3, Users, Target, Filter, MapPin, Building2, Home } from 'lucide-react';
-import { useSessionsData, SessionData } from '@/hooks/useSessionsData';
-import { SessionsFilterSection } from './SessionsFilterSection';
-import { SessionsGroupedTable } from './SessionsGroupedTable';
-import { SessionsMetricCards } from './SessionsMetricCards';
-import { ImprovedSessionsTopBottomLists } from './ImprovedSessionsTopBottomLists';
+import { useRecurringSessionsData, RecurringSessionData } from '@/hooks/useRecurringSessionsData';
+import { RecurringSessionsFilterSection } from './RecurringSessionsFilterSection';
+import { RecurringSessionsGroupedTable } from './RecurringSessionsGroupedTable';
+import { RecurringSessionsMetricCards } from './RecurringSessionsMetricCards';
+import { RecurringSessionsTopBottomLists } from './RecurringSessionsTopBottomLists';
 import { SessionsQuickFilters } from './SessionsQuickFilters';
-import { SessionsAttendanceAnalytics } from './SessionsAttendanceAnalytics';
-import { ClassFormatAnalysis } from './ClassFormatAnalysis';
+import { RecurringSessionsAttendanceAnalytics } from './RecurringSessionsAttendanceAnalytics';
+import { RecurringClassFormatAnalysis } from './RecurringClassFormatAnalysis';
 import { useNavigate } from 'react-router-dom';
 
 const locations = [{
@@ -37,11 +37,12 @@ const locations = [{
 export const ClassAttendanceSection: React.FC = () => {
   const navigate = useNavigate();
   const {
-    data,
+    data: recurringData,
+    teacherData,
     loading,
     error,
     refetch
-  } = useSessionsData();
+  } = useRecurringSessionsData();
   const [activeLocation, setActiveLocation] = useState('all');
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   const [quickFilters, setQuickFilters] = useState({
@@ -51,9 +52,23 @@ export const ClassAttendanceSection: React.FC = () => {
     days: [] as string[]
   });
 
+  const combinedData = useMemo(() => {
+    // Combine both datasets
+    const combined = [...(recurringData || []), ...(teacherData || [])];
+    
+    // Remove duplicates based on uniqueId1 and uniqueId2
+    const uniqueData = combined.filter((item, index, self) => 
+      index === self.findIndex(t => 
+        t.uniqueId1 === item.uniqueId1 && t.uniqueId2 === item.uniqueId2
+      )
+    );
+    
+    return uniqueData;
+  }, [recurringData, teacherData]);
+
   const filteredData = useMemo(() => {
-    if (!data) return [];
-    let filtered = data;
+    if (!combinedData) return [];
+    let filtered = combinedData;
 
     // Apply location filter
     if (activeLocation !== 'all') {
@@ -65,20 +80,20 @@ export const ClassAttendanceSection: React.FC = () => {
       filtered = filtered.filter(item => quickFilters.locations.includes(item.location));
     }
     if (quickFilters.trainers.length > 0) {
-      filtered = filtered.filter(item => quickFilters.trainers.includes(item.trainerName));
+      filtered = filtered.filter(item => quickFilters.trainers.includes(item.trainer));
     }
     if (quickFilters.classes.length > 0) {
-      filtered = filtered.filter(item => quickFilters.classes.includes(item.cleanedClass));
+      filtered = filtered.filter(item => quickFilters.classes.includes(item.class));
     }
     if (quickFilters.days.length > 0) {
-      filtered = filtered.filter(item => quickFilters.days.includes(item.dayOfWeek));
+      filtered = filtered.filter(item => quickFilters.days.includes(item.day));
     }
 
     return filtered;
-  }, [data, activeLocation, quickFilters]);
+  }, [combinedData, activeLocation, quickFilters]);
 
   const uniqueOptions = useMemo(() => {
-    if (!data) return {
+    if (!combinedData) return {
       trainers: [],
       classTypes: [],
       daysOfWeek: [],
@@ -88,15 +103,15 @@ export const ClassAttendanceSection: React.FC = () => {
       days: []
     };
     return {
-      trainers: [...new Set(data.map(item => item.trainerName))].filter(Boolean),
-      classTypes: [...new Set(data.map(item => item.cleanedClass))].filter(Boolean),
-      daysOfWeek: [...new Set(data.map(item => item.dayOfWeek))].filter(Boolean),
-      timeSlots: [...new Set(data.map(item => item.time))].filter(Boolean),
-      locations: [...new Set(data.map(item => item.location))].filter(Boolean),
-      classes: [...new Set(data.map(item => item.cleanedClass))].filter(Boolean),
-      days: [...new Set(data.map(item => item.dayOfWeek))].filter(Boolean)
+      trainers: [...new Set(combinedData.map(item => item.trainer))].filter(Boolean),
+      classTypes: [...new Set(combinedData.map(item => item.class))].filter(Boolean),
+      daysOfWeek: [...new Set(combinedData.map(item => item.day))].filter(Boolean),
+      timeSlots: [...new Set(combinedData.map(item => item.time))].filter(Boolean),
+      locations: [...new Set(combinedData.map(item => item.location))].filter(Boolean),
+      classes: [...new Set(combinedData.map(item => item.class))].filter(Boolean),
+      days: [...new Set(combinedData.map(item => item.day))].filter(Boolean)
     };
-  }, [data]);
+  }, [combinedData]);
 
   const handleQuickFilterChange = (type: string, values: string[]) => {
     setQuickFilters(prev => ({
@@ -114,7 +129,7 @@ export const ClassAttendanceSection: React.FC = () => {
     });
   };
 
-  if (!data || data.length === 0) {
+  if (!combinedData || combinedData.length === 0) {
     return <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <p className="text-slate-600">No class attendance data available</p>
@@ -161,32 +176,32 @@ export const ClassAttendanceSection: React.FC = () => {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <CardContent>
-                      <SessionsFilterSection data={filteredData} />
+                      <RecurringSessionsFilterSection data={filteredData} />
                     </CardContent>
                   </CollapsibleContent>
                 </Collapsible>
               </Card>
 
               {/* Metrics Cards */}
-              <SessionsMetricCards data={filteredData} />
+              <RecurringSessionsMetricCards data={filteredData} />
 
               {/* Top/Bottom Lists */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <ImprovedSessionsTopBottomLists data={filteredData} title="Top Performing Classes" type="classes" variant="top" />
-                <ImprovedSessionsTopBottomLists data={filteredData} title="Top Performing Trainers" type="trainers" variant="top" />
+                <RecurringSessionsTopBottomLists data={filteredData} title="Top Performing Classes" type="classes" variant="top" />
+                <RecurringSessionsTopBottomLists data={filteredData} title="Top Performing Trainers" type="trainers" variant="top" />
               </div>
 
               {/* Analytics Sections */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden">
-                <SessionsGroupedTable data={filteredData} />
+                <RecurringSessionsGroupedTable data={filteredData} />
               </div>
 
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden">
-                <ClassFormatAnalysis data={filteredData} />
+                <RecurringClassFormatAnalysis data={filteredData} />
               </div>
 
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden">
-                <SessionsAttendanceAnalytics data={filteredData} />
+                <RecurringSessionsAttendanceAnalytics data={filteredData} />
               </div>
             </TabsContent>)}
         </Tabs>
