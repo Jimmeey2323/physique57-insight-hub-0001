@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,10 +7,11 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, ChevronUp, BarChart3, Users, Target, Filter, MapPin, Building2, Home } from 'lucide-react';
 import { useRecurringSessionsData, RecurringSessionData } from '@/hooks/useRecurringSessionsData';
 import { RecurringSessionsFilterSection } from './RecurringSessionsFilterSection';
+import { DetailedRecurringSessionsFilter } from './DetailedRecurringSessionsFilter';
 import { RecurringSessionsGroupedTable } from './RecurringSessionsGroupedTable';
+import { ComprehensiveSessionsDataTable } from './ComprehensiveSessionsDataTable';
 import { RecurringSessionsMetricCards } from './RecurringSessionsMetricCards';
 import { RecurringSessionsTopBottomLists } from './RecurringSessionsTopBottomLists';
-import { SessionsQuickFilters } from './SessionsQuickFilters';
 import { RecurringSessionsAttendanceAnalytics } from './RecurringSessionsAttendanceAnalytics';
 import { RecurringClassFormatAnalysis } from './RecurringClassFormatAnalysis';
 import { useNavigate } from 'react-router-dom';
@@ -45,11 +45,20 @@ export const ClassAttendanceSection: React.FC = () => {
   } = useRecurringSessionsData();
   const [activeLocation, setActiveLocation] = useState('all');
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
-  const [quickFilters, setQuickFilters] = useState({
-    locations: [] as string[],
-    trainers: [] as string[],
-    classes: [] as string[],
-    days: [] as string[]
+  const [detailedFilters, setDetailedFilters] = useState({
+    dateRange: { start: '', end: '' },
+    trainers: [],
+    classes: [],
+    locations: [],
+    days: [],
+    times: [],
+    types: [],
+    minCapacity: undefined,
+    maxCapacity: undefined,
+    minFillRate: undefined,
+    maxFillRate: undefined,
+    minRevenue: undefined,
+    maxRevenue: undefined
   });
 
   const combinedData = useMemo(() => {
@@ -75,22 +84,63 @@ export const ClassAttendanceSection: React.FC = () => {
       filtered = filtered.filter(item => item.location === activeLocation);
     }
 
-    // Apply quick filters
-    if (quickFilters.locations.length > 0) {
-      filtered = filtered.filter(item => quickFilters.locations.includes(item.location));
+    // Apply detailed filters
+    if (detailedFilters.trainers?.length > 0) {
+      filtered = filtered.filter(item => detailedFilters.trainers.includes(item.trainer));
     }
-    if (quickFilters.trainers.length > 0) {
-      filtered = filtered.filter(item => quickFilters.trainers.includes(item.trainer));
+    if (detailedFilters.classes?.length > 0) {
+      filtered = filtered.filter(item => detailedFilters.classes.includes(item.class));
     }
-    if (quickFilters.classes.length > 0) {
-      filtered = filtered.filter(item => quickFilters.classes.includes(item.class));
+    if (detailedFilters.locations?.length > 0) {
+      filtered = filtered.filter(item => detailedFilters.locations.includes(item.location));
     }
-    if (quickFilters.days.length > 0) {
-      filtered = filtered.filter(item => quickFilters.days.includes(item.day));
+    if (detailedFilters.days?.length > 0) {
+      filtered = filtered.filter(item => detailedFilters.days.includes(item.day));
+    }
+    if (detailedFilters.times?.length > 0) {
+      filtered = filtered.filter(item => detailedFilters.times.includes(item.time));
+    }
+    if (detailedFilters.types?.length > 0) {
+      filtered = filtered.filter(item => detailedFilters.types.includes(item.type));
+    }
+
+    // Apply numeric filters
+    if (detailedFilters.minCapacity !== undefined) {
+      filtered = filtered.filter(item => item.capacity >= detailedFilters.minCapacity!);
+    }
+    if (detailedFilters.maxCapacity !== undefined) {
+      filtered = filtered.filter(item => item.capacity <= detailedFilters.maxCapacity!);
+    }
+    if (detailedFilters.minFillRate !== undefined) {
+      filtered = filtered.filter(item => (item.fillPercentage || 0) >= detailedFilters.minFillRate!);
+    }
+    if (detailedFilters.maxFillRate !== undefined) {
+      filtered = filtered.filter(item => (item.fillPercentage || 0) <= detailedFilters.maxFillRate!);
+    }
+    if (detailedFilters.minRevenue !== undefined) {
+      filtered = filtered.filter(item => item.revenue >= detailedFilters.minRevenue!);
+    }
+    if (detailedFilters.maxRevenue !== undefined) {
+      filtered = filtered.filter(item => item.revenue <= detailedFilters.maxRevenue!);
+    }
+
+    // Apply date range filter
+    if (detailedFilters.dateRange?.start || detailedFilters.dateRange?.end) {
+      const startDate = detailedFilters.dateRange.start ? new Date(detailedFilters.dateRange.start) : null;
+      const endDate = detailedFilters.dateRange.end ? new Date(detailedFilters.dateRange.end) : null;
+
+      filtered = filtered.filter(item => {
+        if (!item.date) return false;
+        const itemDate = new Date(item.date);
+        if (isNaN(itemDate.getTime())) return false;
+        if (startDate && itemDate < startDate) return false;
+        if (endDate && itemDate > endDate) return false;
+        return true;
+      });
     }
 
     return filtered;
-  }, [combinedData, activeLocation, quickFilters]);
+  }, [combinedData, activeLocation, detailedFilters]);
 
   const uniqueOptions = useMemo(() => {
     if (!combinedData) return {
@@ -113,19 +163,25 @@ export const ClassAttendanceSection: React.FC = () => {
     };
   }, [combinedData]);
 
-  const handleQuickFilterChange = (type: string, values: string[]) => {
-    setQuickFilters(prev => ({
-      ...prev,
-      [type]: values
-    }));
+  const handleDetailedFilterChange = (newFilters: any) => {
+    setDetailedFilters(newFilters);
   };
 
-  const clearQuickFilters = () => {
-    setQuickFilters({
-      locations: [],
+  const clearDetailedFilters = () => {
+    setDetailedFilters({
+      dateRange: { start: '', end: '' },
       trainers: [],
       classes: [],
-      days: []
+      locations: [],
+      days: [],
+      times: [],
+      types: [],
+      minCapacity: undefined,
+      maxCapacity: undefined,
+      minFillRate: undefined,
+      maxFillRate: undefined,
+      minRevenue: undefined,
+      maxRevenue: undefined
     });
   };
 
@@ -144,7 +200,12 @@ export const ClassAttendanceSection: React.FC = () => {
         <Tabs value={activeLocation} onValueChange={setActiveLocation} className="w-full">
           <div className="flex justify-center mb-8">
             <TabsList className="bg-white/90 backdrop-blur-sm p-2 rounded-2xl shadow-xl border-0 grid grid-cols-4 w-full max-w-3xl overflow-hidden">
-              {locations.map(location => <TabsTrigger key={location.id} value={location.id} className="relative rounded-xl px-6 py-4 font-semibold text-sm transition-all duration-300 ease-out hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-50">
+              {locations.map(location => (
+                <TabsTrigger 
+                  key={location.id} 
+                  value={location.id} 
+                  className="relative rounded-xl px-6 py-4 font-semibold text-sm transition-all duration-300 ease-out hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-50"
+                >
                   <div className="flex items-center gap-2">
                     {location.id === 'all' ? <Building2 className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
                     <div className="text-center">
@@ -152,23 +213,29 @@ export const ClassAttendanceSection: React.FC = () => {
                       {location.name.includes(',') && <div className="text-xs opacity-80">{location.name.split(',')[1]?.trim()}</div>}
                     </div>
                   </div>
-                </TabsTrigger>)}
+                </TabsTrigger>
+              ))}
             </TabsList>
           </div>
 
-          {locations.map(location => <TabsContent key={location.id} value={location.id} className="space-y-8">
-              {/* Quick Filters */}
-              <SessionsQuickFilters filters={quickFilters} options={uniqueOptions} onFilterChange={handleQuickFilterChange} onClearAll={clearQuickFilters} />
+          {locations.map(location => (
+            <TabsContent key={location.id} value={location.id} className="space-y-8">
+              {/* Detailed Filters */}
+              <DetailedRecurringSessionsFilter 
+                data={combinedData} 
+                filters={detailedFilters} 
+                onFiltersChange={handleDetailedFilterChange} 
+              />
 
-              {/* Collapsible Advanced Filters */}
+              {/* Collapsible Comprehensive Data Table */}
               <Card className="bg-white/80 backdrop-blur-sm shadow-lg border-0 overflow-hidden">
                 <Collapsible open={isFilterExpanded} onOpenChange={setIsFilterExpanded}>
                   <CollapsibleTrigger asChild>
                     <CardHeader className="pb-4 cursor-pointer hover:bg-gray-50/50 transition-colors">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                          <Filter className="w-5 h-5 text-blue-600" />
-                          Advanced Filters
+                          <BarChart3 className="w-5 h-5 text-blue-600" />
+                          Comprehensive Data Table
                         </CardTitle>
                         {isFilterExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                       </div>
@@ -176,7 +243,7 @@ export const ClassAttendanceSection: React.FC = () => {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <CardContent>
-                      <RecurringSessionsFilterSection data={filteredData} />
+                      <ComprehensiveSessionsDataTable data={filteredData} />
                     </CardContent>
                   </CollapsibleContent>
                 </Collapsible>
@@ -203,7 +270,8 @@ export const ClassAttendanceSection: React.FC = () => {
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden">
                 <RecurringSessionsAttendanceAnalytics data={filteredData} />
               </div>
-            </TabsContent>)}
+            </TabsContent>
+          ))}
         </Tabs>
       </div>
     </div>

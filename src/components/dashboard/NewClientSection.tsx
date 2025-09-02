@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EnhancedClientConversionFilterSection } from './EnhancedClientConversionFilterSection';
-import { ClientConversionCharts } from './ClientConversionCharts';
+import { ComprehensiveClientConversionTable } from './ComprehensiveClientConversionTable';
 import { ClientAcquisitionFunnel } from './ClientAcquisitionFunnel';
 import { ClientConversionTopBottomLists } from './ClientConversionTopBottomLists';
 import { EnhancedClientConversionMetrics } from './EnhancedClientConversionMetrics';
@@ -230,59 +230,50 @@ export const NewClientSection: React.FC<NewClientSectionProps> = ({
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <Card className="bg-white shadow-sm border border-gray-200">
           <CardContent className="p-4">
-            <TabsList className="grid w-full grid-cols-6 bg-gray-100 p-1 rounded-lg">
-              <TabsTrigger value="overview" className="text-sm font-medium">
-                <BarChart3 className="w-4 h-4 mr-2" />
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="text-sm font-medium">
-                <TrendingUp className="w-4 h-4 mr-2" />
-                Analytics
-              </TabsTrigger>
-              <TabsTrigger value="performance" className="text-sm font-medium">
-                <Target className="w-4 h-4 mr-2" />
-                Performance
-              </TabsTrigger>
-              <TabsTrigger value="monthonmonth" className="text-sm font-medium">
-                <Target className="w-4 h-4 mr-2" />
-                Month-on-Month
-              </TabsTrigger>
-              <TabsTrigger value="yearonyear" className="text-sm font-medium">
-                <Target className="w-4 h-4 mr-2" />
-                Year-on-Year
-              </TabsTrigger>
-              <TabsTrigger value="detailed" className="text-sm font-medium">
-                <Eye className="w-4 h-4 mr-2" />
-                Detailed View
-              </TabsTrigger>
+              <TabsList className="grid w-full grid-cols-5 bg-gray-100 p-1 rounded-lg">
+                <TabsTrigger value="overview" className="text-sm font-medium">
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="text-sm font-medium">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="performance" className="text-sm font-medium">
+                  <Target className="w-4 h-4 mr-2" />
+                  Performance
+                </TabsTrigger>
+                <TabsTrigger value="comprehensive" className="text-sm font-medium">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Comprehensive View
+                </TabsTrigger>
+                <TabsTrigger value="detailed" className="text-sm font-medium">
+                  <Users className="w-4 h-4 mr-2" />
+                  Detailed Data
+                </TabsTrigger>
             </TabsList>
           </CardContent>
         </Card>
 
-        <TabsContent value="overview" className="space-y-8">
-          <ClientConversionCharts data={filteredData} />
-          <ClientConversionTopBottomLists data={filteredData} onItemClick={handleItemClick} />
-        </TabsContent>
+                <TabsContent value="overview" className="space-y-8">
+                  <ClientConversionTopBottomLists data={filteredData} onItemClick={handleItemClick} />
+                </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-8">
-          <ConversionAnalyticsTables data={filteredData} onItemClick={handleItemClick} />
-        </TabsContent>
+                <TabsContent value="analytics" className="space-y-8">
+                  <ConversionAnalyticsTables data={filteredData} onItemClick={handleItemClick} />
+                </TabsContent>
 
-        <TabsContent value="performance" className="space-y-8">
-          <ClientConversionTopBottomLists data={filteredData} onItemClick={handleItemClick} />
-        </TabsContent>
+                <TabsContent value="performance" className="space-y-8">
+                  <ClientConversionTopBottomLists data={filteredData} onItemClick={handleItemClick} />
+                </TabsContent>
 
-        <TabsContent value="monthonmonth" className="space-y-8">
-          <ClientConversionMonthOnMonthTable data={filteredData} />
-        </TabsContent>
+                <TabsContent value="comprehensive" className="space-y-8">
+                  <ComprehensiveClientConversionTable data={filteredData} onItemClick={handleItemClick} />
+                </TabsContent>
 
-        <TabsContent value="yearonyear" className="space-y-8">
-          <ClientConversionYearOnYearTable data={filteredData} />
-        </TabsContent>
-
-        <TabsContent value="detailed" className="space-y-8">
-          <ClientConversionDataTable data={filteredData} onItemClick={handleItemClick} />
-        </TabsContent>
+                <TabsContent value="detailed" className="space-y-8">
+                  <ClientConversionDataTable data={filteredData} onItemClick={handleItemClick} />
+                </TabsContent>
             </Tabs>
           </TabsContent>
         ))}
