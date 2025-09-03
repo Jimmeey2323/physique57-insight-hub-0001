@@ -302,6 +302,7 @@ export const ClientConversionDetailedDataTable: React.FC<ClientConversionDetaile
           onSort={handleSort}
           sortField={sortField}
           sortDirection={sortDirection}
+          onRowClick={onItemClick ? (row) => onItemClick(row) : undefined}
         />
       </CardContent>
     </Card>

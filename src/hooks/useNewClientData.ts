@@ -39,6 +39,16 @@ export const useNewClientData = () => {
     }
   };
 
+  // Helper to extract monthYear from a date string (YYYY-MM or MMM YYYY)
+  const getMonthYear = (dateStr: string = ''): string => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return '';
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${year}-${month}`;
+  };
+
   const fetchNewClientData = async () => {
     try {
       setLoading(true);
@@ -65,33 +75,37 @@ export const useNewClientData = () => {
         return;
       }
 
-      const newClientData: NewClientData[] = rows.slice(1).map((row: any[]) => ({
-        memberId: row[0] || '',
-        firstName: row[1] || '',
-        lastName: row[2] || '',
-        email: row[3] || '',
-        phoneNumber: row[4] || '',
-        firstVisitDate: row[5] || '',
-        firstVisitEntityName: row[6] || '',
-        firstVisitType: row[7] || '',
-        firstVisitLocation: row[8] || '',
-        paymentMethod: row[9] || '',
-        membershipUsed: row[10] || '',
-        homeLocation: row[11] || '',
-        classNo: parseFloat(row[12]) || 0,
-        trainerName: row[13] || '',
-        isNew: row[14] || '',
-        visitsPostTrial: parseFloat(row[15]) || 0,
-        membershipsBoughtPostTrial: row[16] || '',
-        purchaseCountPostTrial: parseFloat(row[17]) || 0,
-        ltv: parseFloat(row[18]) || 0,
-        retentionStatus: row[19] || '',
-        conversionStatus: row[20] || '',
-        period: row[21] || '',
-        unique: row[22] || '',
-        firstPurchase: row[23] || '',
-        conversionSpan: parseFloat(row[24]) || 0,
-      }));
+      const newClientData: NewClientData[] = rows.slice(1).map((row: any[]) => {
+        const firstVisitDate = row[5] || '';
+        return {
+          memberId: row[0] || '',
+          firstName: row[1] || '',
+          lastName: row[2] || '',
+          email: row[3] || '',
+          phoneNumber: row[4] || '',
+          firstVisitDate,
+          firstVisitEntityName: row[6] || '',
+          firstVisitType: row[7] || '',
+          firstVisitLocation: row[8] || '',
+          paymentMethod: row[9] || '',
+          membershipUsed: row[10] || '',
+          homeLocation: row[11] || '',
+          classNo: parseFloat(row[12]) || 0,
+          trainerName: row[13] || '',
+          isNew: row[14] || '',
+          visitsPostTrial: parseFloat(row[15]) || 0,
+          membershipsBoughtPostTrial: row[16] || '',
+          purchaseCountPostTrial: parseFloat(row[17]) || 0,
+          ltv: parseFloat(row[18]) || 0,
+          retentionStatus: row[19] || '',
+          conversionStatus: row[20] || '',
+          period: row[21] || '',
+          unique: row[22] || '',
+          firstPurchase: row[23] || '',
+          conversionSpan: parseFloat(row[24]) || 0,
+          monthYear: getMonthYear(firstVisitDate),
+        };
+      });
 
       console.log('New client data loaded:', newClientData.length, 'records');
       setData(newClientData);

@@ -7,11 +7,14 @@ import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { NewClientData } from '@/types/dashboard';
 import { ModernDataTable } from '@/components/ui/ModernDataTable';
 
+interface ClientConversionAdvancedMetricsProps {
   data: NewClientData[];
-  // Optionally allow passing payroll data for richer metrics
   payrollData?: any[];
+  onDrillDown?: (title: string, data: any[], type?: string) => void;
 }
 
+
+export const ClientConversionAdvancedMetrics: React.FC<ClientConversionAdvancedMetricsProps> = ({ data, payrollData, onDrillDown }) => {
   console.log('ClientConversionAdvancedMetrics data:', data.length, 'records');
 
   // --- Hosted class detection helper ---
@@ -328,6 +331,15 @@ import { ModernDataTable } from '@/components/ui/ModernDataTable';
             headerGradient="from-pink-600 to-orange-600"
             showFooter={false}
             maxHeight="400px"
+            onRowClick={onDrillDown ? (row) => {
+              // Find all clients for this hosted class month
+              const month = row.month;
+              const drillData = data.filter(client =>
+                (client.monthYear || getMonthYear(client.firstVisitDate, 'Unknown')) === month &&
+                isHostedClass(client.firstVisitEntityName)
+              );
+              onDrillDown(`Hosted Class Details: ${month}`, drillData, 'hosted-class');
+            } : undefined}
           />
         </CardContent>
       </Card>
@@ -351,6 +363,11 @@ import { ModernDataTable } from '@/components/ui/ModernDataTable';
             showFooter={true}
             footerData={membershipTotals}
             maxHeight="400px"
+            onRowClick={onDrillDown ? (row) => {
+              // Find all clients for this membership type
+              const drillData = data.filter(client => (client.membershipUsed || 'No Membership') === row.membershipType);
+              onDrillDown(`Membership Details: ${row.membershipType}`, drillData, 'membership');
+            } : undefined}
           />
         </CardContent>
       </Card>
@@ -374,6 +391,11 @@ import { ModernDataTable } from '@/components/ui/ModernDataTable';
             showFooter={true}
             footerData={trainerTotals}
             maxHeight="400px"
+            onRowClick={onDrillDown ? (row) => {
+              // Find all clients for this trainer
+              const drillData = data.filter(client => (client.trainerName || 'No Trainer') === row.trainerName);
+              onDrillDown(`Trainer Details: ${row.trainerName}`, drillData, 'trainer');
+            } : undefined}
           />
         </CardContent>
       </Card>

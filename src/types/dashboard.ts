@@ -78,6 +78,7 @@ export interface NewClientData {
   period: string;
   unique: string;
   firstPurchase: string;
+  monthYear?: string;
   conversionSpan: number;
 }
 

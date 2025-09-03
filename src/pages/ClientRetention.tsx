@@ -17,6 +17,8 @@ import { ClientConversionLocationSelector } from '@/components/dashboard/ClientC
 import { EnhancedClientConversionFilterSection } from '@/components/dashboard/EnhancedClientConversionFilterSection';
 import { ClientConversionDetailedDataTable } from '@/components/dashboard/ClientConversionDetailedDataTable';
 import { EnhancedClientConversionMetrics } from '@/components/dashboard/EnhancedClientConversionMetrics';
+import { ClientConversionAdvancedMetrics } from '@/components/dashboard/ClientConversionAdvancedMetrics';
+import { UniversalDrillDownModal } from '@/components/dashboard/UniversalDrillDownModal';
 import { ClientConversionTopBottomLists } from '@/components/dashboard/ClientConversionTopBottomLists';
 import { ClientConversionCharts } from '@/components/dashboard/ClientConversionCharts';
 import { ClientConversionMonthOnMonthTable } from '@/components/dashboard/ClientConversionMonthOnMonthTable';
@@ -30,6 +32,7 @@ const ClientRetention = () => {
   const navigate = useNavigate();
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [activeTab, setActiveTab] = useState('overview');
+  const [drillDownModal, setDrillDownModal] = useState({ isOpen: false, data: null, type: '', title: '' });
   
   // Get previous month date range function
   const getPreviousMonthRange = () => {
@@ -368,13 +371,22 @@ const ClientRetention = () => {
               </CardContent>
             </Card>
 
+
             <TabsContent value="overview" className="space-y-8">
-              <EnhancedClientConversionMetrics data={filteredData} />
+              <ClientConversionAdvancedMetrics
+                data={filteredData}
+                payrollData={[]}
+                onDrillDown={(title, data, type = 'client') => setDrillDownModal({ isOpen: true, data, type, title })}
+              />
               <ClientConversionTopBottomLists data={filteredData} />
             </TabsContent>
 
             <TabsContent value="analytics" className="space-y-8">
-              <EnhancedClientConversionMetrics data={filteredData} />
+              <ClientConversionAdvancedMetrics
+                data={filteredData}
+                payrollData={[]}
+                onDrillDown={(title, data, type = 'client') => setDrillDownModal({ isOpen: true, data, type, title })}
+              />
               <ClientConversionEntityTable data={filteredData} />
             </TabsContent>
 
@@ -395,9 +407,27 @@ const ClientRetention = () => {
             </TabsContent>
 
             <TabsContent value="detailed" className="space-y-8">
-              <ClientConversionDetailedDataTable data={filteredData} />
+              <ClientConversionDetailedDataTable
+                data={filteredData}
+                onItemClick={(item) => setDrillDownModal({
+                  isOpen: true,
+                  data: [item],
+                  type: 'client',
+                  title: `Client Details: ${item.firstName} ${item.lastName}`
+                })}
+              />
             </TabsContent>
           </Tabs>
+
+          {/* Drill Down Modal */}
+          <UniversalDrillDownModal
+            isOpen={drillDownModal.isOpen}
+            onClose={() => setDrillDownModal({ ...drillDownModal, isOpen: false })}
+            data={drillDownModal.data}
+            relatedData={filteredData}
+            type={drillDownModal.type as any}
+            title={drillDownModal.title}
+          />
         </main>
       </div>
       
