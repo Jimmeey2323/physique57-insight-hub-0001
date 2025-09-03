@@ -35,7 +35,13 @@ export const MonthOnMonthTable: React.FC<MonthOnMonthTableProps> = ({
   const [selectedMetric, setSelectedMetric] = useState<YearOnYearMetricType>(initialMetric);
   const [isEditingSummary, setIsEditingSummary] = useState(false);
   const [summaryText, setSummaryText] = useState('• Month-on-month analysis shows seasonal patterns\n• Strong performance in peak months with growth opportunities identified\n• Consistent upward trend in key metrics');
+  // All groups expanded by default
   const [localCollapsedGroups, setLocalCollapsedGroups] = useState<Set<string>>(new Set());
+
+  // Ensure all groups are expanded on mount
+  React.useEffect(() => {
+    setLocalCollapsedGroups(new Set());
+  }, []);
 
   const parseDate = (dateStr: string): Date | null => {
     if (!dateStr) return null;
@@ -255,8 +261,8 @@ export const MonthOnMonthTable: React.FC<MonthOnMonthTableProps> = ({
   };
 
   return (
-    <Card className="bg-gradient-to-br from-white via-slate-50/30 to-white border-0 shadow-xl rounded-xl">
-      <CardHeader className="pb-4">
+  <Card className="bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 border-0 shadow-2xl rounded-2xl">
+  <CardHeader className="pb-4 bg-gradient-to-r from-blue-700 to-blue-900 rounded-t-2xl shadow-md">
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-start">
             <div>
@@ -275,9 +281,9 @@ export const MonthOnMonthTable: React.FC<MonthOnMonthTableProps> = ({
       </CardHeader>
 
       <CardContent className="p-0">
-        <div className="overflow-x-auto rounded-lg">
-          <table className="min-w-full bg-white border-t border-gray-200 rounded-lg">
-            <thead className="bg-gradient-to-r from-blue-700 to-blue-900 text-white font-semibold text-sm uppercase tracking-wider sticky top-0 z-20">
+        <div className="overflow-x-auto rounded-b-2xl">
+          <table className="min-w-full bg-white border-t border-blue-200 rounded-b-2xl shadow-md">
+            <thead className="bg-gradient-to-r from-blue-700 to-blue-900 text-white font-semibold text-sm uppercase tracking-wider sticky top-0 z-30">
               <tr className="bg-gradient-to-r from-blue-700 to-blue-900 text-white font-semibold text-sm uppercase tracking-wider px-4 py-2 rounded-md">
                 <th rowSpan={2} className="text-white font-semibold uppercase tracking-wider px-6 py-3 text-left rounded-tl-lg sticky left-0 bg-blue-800 z-30">
                   Category / Product
@@ -303,7 +309,7 @@ export const MonthOnMonthTable: React.FC<MonthOnMonthTableProps> = ({
               {processedData.map((categoryData, categoryIndex) => (
                 <React.Fragment key={categoryData.category}>
                   <tr className="bg-gradient-to-r from-gray-100 to-gray-200 border-b-2 border-gray-300 font-bold">
-                    <td className="px-6 py-3 text-sm font-bold text-gray-800 sticky left-0 bg-gradient-to-r from-gray-100 to-gray-200 border-r border-gray-300">
+                    <td className="px-6 py-3 text-sm font-bold text-gray-800 sticky left-0 bg-gradient-to-r from-gray-100 to-gray-200 border-r border-gray-300 z-20">
                       <div className="flex items-center gap-2">
                         <Button variant="ghost" size="sm" onClick={() => toggleGroup(categoryData.category)} className="p-1 h-6 w-6 text-gray-600 hover:text-gray-800">
                           {localCollapsedGroups.has(categoryData.category) ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -331,13 +337,13 @@ export const MonthOnMonthTable: React.FC<MonthOnMonthTableProps> = ({
                   {!localCollapsedGroups.has(categoryData.category) && categoryData.products.map((product, productIndex) => (
                     <tr 
                       key={`${categoryData.category}-${product.product}`} 
-                      className="hover:bg-blue-50 cursor-pointer border-b border-gray-100 transition-colors duration-200" 
+                      className="hover:bg-blue-100/60 cursor-pointer border-b border-gray-100 transition-colors duration-200 group" 
                       onClick={() => handleRowClickWithDrillDown(product)}
                     >
-                      <td className="px-6 py-3 text-sm font-medium text-gray-900 sticky left-0 bg-white border-r border-gray-200 max-w-48">
+                      <td className="px-6 py-3 text-sm font-medium text-gray-900 sticky left-0 bg-white border-r border-gray-200 max-w-64 z-10">
                         <div className="flex items-center gap-2 pl-8">
                           <span className="text-gray-500">#{productIndex + 1}</span>
-                          <span className="truncate">{product.product}</span>
+                          <span className="whitespace-normal break-words font-semibold group-hover:text-blue-700 transition-all duration-150">{product.product}</span>
                         </div>
                       </td>
                       {monthlyData.map(({ key }, monthIndex) => {
@@ -357,8 +363,8 @@ export const MonthOnMonthTable: React.FC<MonthOnMonthTableProps> = ({
                 </React.Fragment>
               ))}
               
-              <tr className="bg-gradient-to-r from-blue-50 to-blue-100 border-t-2 border-blue-200 font-bold">
-                <td className="px-6 py-3 text-sm font-bold text-blue-900 sticky left-0 bg-blue-100 border-r border-blue-200">
+              <tr className="bg-gradient-to-r from-blue-200 to-blue-300 border-t-2 border-blue-300 font-bold">
+                <td className="px-6 py-3 text-sm font-bold text-blue-900 sticky left-0 bg-blue-200 border-r border-blue-300 z-20">
                   TOTAL
                 </td>
                 {monthlyData.map(({ key }) => (

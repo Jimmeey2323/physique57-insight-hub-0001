@@ -137,7 +137,7 @@ export const UnifiedTopBottomSellers: React.FC<UnifiedTopBottomSellersProps> = (
                   {index + 1}
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-slate-900 truncate max-w-40 group-hover:text-blue-600 transition-colors">
+                  <p className="font-semibold text-slate-900 whitespace-normal break-words group-hover:text-blue-600 transition-colors">
                     {seller.name}
                   </p>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -165,7 +165,25 @@ export const UnifiedTopBottomSellers: React.FC<UnifiedTopBottomSellersProps> = (
                 </p>
                 <p className="text-sm text-slate-500">{formatNumber(seller.unitsSold)} units</p>
                 <p className="text-xs text-slate-400">{formatNumber(seller.uniqueMembers)} customers</p>
-                <Button variant="ghost" size="sm" className="mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={e => {
+                    e.stopPropagation();
+                    // Filter data for this seller only
+                    const filtered = data.filter(item => {
+                      switch (type) {
+                        case 'product': return item.cleanedProduct === seller.name;
+                        case 'category': return item.cleanedCategory === seller.name;
+                        case 'member': return item.customerName === seller.name;
+                        case 'seller': return item.soldBy === seller.name;
+                        default: return false;
+                      }
+                    });
+                    onRowClick?.({ ...seller, rawData: filtered, type });
+                  }}
+                >
                   <Eye className="w-3 h-3 mr-1" />
                   View Details
                 </Button>
