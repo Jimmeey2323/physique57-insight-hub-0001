@@ -60,8 +60,8 @@ export const processTrainerData = (payrollData: PayrollData[]): ProcessedTrainer
     const classAverageInclEmpty = totalSessions > 0 ? totalCustomers / totalSessions : 0;
 
     // Conversion & Retention
-    const conversionRate = record.conversionRate || 0;
-    const retentionRate = record.retentionRate || 0;
+    const conversionRate = Number(record.conversion) || 0;
+    const retentionRate = Number(record.retention) || 0;
 
     return {
       trainerId: record.teacherId,
@@ -82,11 +82,11 @@ export const processTrainerData = (payrollData: PayrollData[]): ProcessedTrainer
       cycleCustomers: record.cycleCustomers || 0,
       cycleRevenue: record.cyclePaid || 0,
 
-      strengthSessions: record.strengthSessions || 0,
-      emptyStrengthSessions: record.emptyStrengthSessions || 0,
-      nonEmptyStrengthSessions: record.nonEmptyStrengthSessions || 0,
-      strengthCustomers: record.strengthCustomers || 0,
-      strengthRevenue: record.strengthPaid || 0,
+      strengthSessions: 0,
+      emptyStrengthSessions: 0,
+      nonEmptyStrengthSessions: 0,
+      strengthCustomers: 0,
+      strengthRevenue: 0,
 
       barreSessions: record.barreSessions || 0,
       emptyBarreSessions: record.emptyBarreSessions || 0,
@@ -100,8 +100,8 @@ export const processTrainerData = (payrollData: PayrollData[]): ProcessedTrainer
       conversion: record.converted || 0,
       retention: record.retained || 0,
 
-      uniqueKey: record.uniqueKey || '',
-      newMembers: record.newCustomers || 0,
+      uniqueKey: record.unique || '',
+      newMembers: 0,
       convertedMembers: record.converted || 0,
       retainedMembers: record.retained || 0,
       conversionRate,
