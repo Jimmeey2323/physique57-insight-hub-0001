@@ -19,6 +19,7 @@ import { PaymentMethodMonthOnMonthTable } from './PaymentMethodMonthOnMonthTable
 import { NoteTaker } from '@/components/ui/NoteTaker';
 import { SalesData, FilterOptions, MetricCardData, YearOnYearMetricType } from '@/types/dashboard';
 import { formatCurrency, formatNumber, formatPercentage } from '@/utils/formatters';
+import { getPreviousMonthDateRange } from '@/utils/dateUtils';
 import { cn } from '@/lib/utils';
 
 interface SalesAnalyticsSectionProps {
@@ -50,15 +51,10 @@ export const SalesAnalyticsSection: React.FC<SalesAnalyticsSectionProps> = ({ da
 
   // Initialize filters with previous month as default
   const [filters, setFilters] = useState<FilterOptions>(() => {
-    const now = new Date();
-    const firstDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastDayPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    const previousMonth = getPreviousMonthDateRange();
     
     return {
-      dateRange: {
-        start: firstDayPrevMonth.toISOString().split('T')[0],
-        end: lastDayPrevMonth.toISOString().split('T')[0]
-      },
+      dateRange: previousMonth,
       location: [],
       category: [],
       product: [],
@@ -217,15 +213,10 @@ export const SalesAnalyticsSection: React.FC<SalesAnalyticsSectionProps> = ({ da
   };
 
   const resetFilters = () => {
-    const now = new Date();
-    const firstDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastDayPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    const previousMonth = getPreviousMonthDateRange();
     
     setFilters({
-      dateRange: {
-        start: firstDayPrevMonth.toISOString().split('T')[0],
-        end: lastDayPrevMonth.toISOString().split('T')[0]
-      },
+      dateRange: previousMonth,
       location: [],
       category: [],
       product: [],

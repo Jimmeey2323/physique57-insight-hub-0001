@@ -3,19 +3,30 @@ export const getPreviousMonthDateRange = () => {
   const now = new Date();
   // Get the first day of the previous month
   const firstDayPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  // Get the last day of the previous month
+  // Get the last day of the previous month  
   const lastDayPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
   
-  // Use local date strings to avoid timezone issues
-  const startString = `${firstDayPreviousMonth.getFullYear()}-${String(firstDayPreviousMonth.getMonth() + 1).padStart(2, '0')}-${String(firstDayPreviousMonth.getDate()).padStart(2, '0')}`;
-  const endString = `${lastDayPreviousMonth.getFullYear()}-${String(lastDayPreviousMonth.getMonth() + 1).padStart(2, '0')}-${String(lastDayPreviousMonth.getDate()).padStart(2, '0')}`;
-  
-  console.log('Previous month date range:', { start: startString, end: endString, firstDay: firstDayPreviousMonth, lastDay: lastDayPreviousMonth });
-  
-  return {
-    start: startString,
-    end: endString
+  // Format dates as YYYY-MM-DD using local timezone
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
+  
+  const result = {
+    start: formatDate(firstDayPreviousMonth),
+    end: formatDate(lastDayPreviousMonth)
+  };
+  
+  console.log('Previous month date range:', result, { 
+    firstDay: firstDayPreviousMonth.toDateString(), 
+    lastDay: lastDayPreviousMonth.toDateString(),
+    currentMonth: now.getMonth() + 1,
+    previousMonth: firstDayPreviousMonth.getMonth() + 1
+  });
+  
+  return result;
 };
 
 export const getCurrentMonthDateRange = () => {
