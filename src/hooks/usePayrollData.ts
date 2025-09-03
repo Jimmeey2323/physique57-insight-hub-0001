@@ -74,27 +74,43 @@ export const usePayrollData = () => {
         return;
       }
 
-      const payrollData: PayrollData[] = rows.slice(1).map((row: any[]) => ({
+            const payrollData: PayrollData[] = rows.slice(1).map((row: any[]) => ({        
         teacherId: row[0] || '',
         teacherName: row[1] || '',
         teacherEmail: row[2] || '',
         location: row[3] || '',
+
         cycleSessions: parseNumericValue(row[4]),
         emptyCycleSessions: parseNumericValue(row[5]),
         nonEmptyCycleSessions: parseNumericValue(row[6]),
         cycleCustomers: parseNumericValue(row[7]),
         cyclePaid: parseNumericValue(row[8]),
-        barreSessions: parseNumericValue(row[9]),
-        emptyBarreSessions: parseNumericValue(row[10]),
-        nonEmptyBarreSessions: parseNumericValue(row[11]),
-        barreCustomers: parseNumericValue(row[12]),
-        barrePaid: parseNumericValue(row[13]),
-        totalSessions: parseNumericValue(row[14]),
-        totalEmptySessions: parseNumericValue(row[15]),
-        totalNonEmptySessions: parseNumericValue(row[16]),
-        totalCustomers: parseNumericValue(row[17]),
-        totalPaid: parseNumericValue(row[18]),
-        monthYear: row[19] || ''
+
+        strengthSessions: parseNumericValue(row[9]),
+        emptyStrengthSessions: parseNumericValue(row[10]),
+        nonEmptyStrengthSessions: parseNumericValue(row[11]),
+        strengthCustomers: parseNumericValue(row[12]),
+        strengthPaid: parseNumericValue(row[13]),
+
+        barreSessions: parseNumericValue(row[14]),
+        emptyBarreSessions: parseNumericValue(row[15]),
+        nonEmptyBarreSessions: parseNumericValue(row[16]),
+        barreCustomers: parseNumericValue(row[17]),
+        barrePaid: parseNumericValue(row[18]),
+
+        totalSessions: parseNumericValue(row[19]),
+        totalEmptySessions: parseNumericValue(row[20]),
+        totalNonEmptySessions: parseNumericValue(row[21]),
+        totalCustomers: parseNumericValue(row[22]),
+        totalPaid: parseNumericValue(row[23]),
+
+        monthYear: row[24] || '',
+        uniqueKey: row[25] || '',
+        converted: parseNumericValue(row[26]),
+        conversionRate: parseNumericValue(row[27]),
+        retained: parseNumericValue(row[28]),
+        retentionRate: parseNumericValue(row[29]),
+        newCustomers: parseNumericValue(row[30]),
       }));
 
       setData(payrollData);
