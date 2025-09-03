@@ -47,13 +47,23 @@ export const useDiscountsData = () => {
             return isNaN(num) ? 0 : num;
           };
 
-          // Fix the column names to match the Google Sheets structure
+          // Fix the column names to match the Google Sheets structure exactly
           const discountAmount = parseNumber(item['Discount Amount -Mrp- Payment Value']);
           const discountPercentage = parseNumber(item['Discount Percentage - discount amount/mrp*100']);
           const paymentValue = parseNumber(item['Payment Value']);
           const mrpPreTax = parseNumber(item['Mrp - Pre Tax']);
           const mrpPostTax = parseNumber(item['Mrp - Post Tax']);
           const paymentVAT = parseNumber(item['Payment VAT']);
+          
+          // Debug log the raw item to see actual column names
+          if (Object.keys(item).length > 0) {
+            console.log('Raw item keys:', Object.keys(item).slice(0, 10));
+            console.log('Sample raw values:', {
+              paymentValue: item['Payment Value'],
+              discountAmount: item['Discount Amount -Mrp- Payment Value'],
+              mrpPreTax: item['Mrp - Pre Tax']
+            });
+          }
           
           console.log('Processing item:', {
             discountAmount,

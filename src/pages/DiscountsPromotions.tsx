@@ -21,14 +21,16 @@ import { getPreviousMonthDateRange } from '@/utils/dateUtils';
 // import { DataDebugger } from '@/components/debug/DataDebugger'; // Debug component removed
 
 interface DiscountFilters {
-  dateRange: { start: string; end: string };
-  paymentMethod: string[];
-  category: string[];
-  product: string[];
-  soldBy: string[];
-  minDiscount?: number;
-  maxDiscount?: number;
-  discountRange: string[];
+  dateRange?: { from?: Date; to?: Date };
+  location?: string;
+  paymentMethod?: string;
+  category?: string;
+  product?: string;
+  soldBy?: string;
+  minDiscountAmount?: number;
+  maxDiscountAmount?: number;
+  minDiscountPercent?: number;
+  maxDiscountPercent?: number;
 }
 
 const DiscountsPromotions: React.FC = () => {
@@ -47,16 +49,9 @@ const DiscountsPromotions: React.FC = () => {
     
     return {
       dateRange: {
-        start: sixMonthsAgo.toISOString().split('T')[0],
-        end: today.toISOString().split('T')[0]
-      },
-      paymentMethod: [],
-      category: [],
-      product: [],
-      soldBy: [],
-      minDiscount: undefined,
-      maxDiscount: undefined,
-      discountRange: []
+        from: sixMonthsAgo,
+        to: today
+      }
     };
   });
 
@@ -75,10 +70,10 @@ const DiscountsPromotions: React.FC = () => {
     
     let result = data;
 
-    // Apply date range filter
-    if (filters.dateRange.start || filters.dateRange.end) {
-      const startDate = filters.dateRange.start ? new Date(filters.dateRange.start) : null;
-      const endDate = filters.dateRange.end ? new Date(filters.dateRange.end) : null;
+    // Apply date range filter from DiscountFilterSection
+    if (filters.dateRange?.from || filters.dateRange?.to) {
+      const startDate = filters.dateRange.from ? new Date(filters.dateRange.from) : null;
+      const endDate = filters.dateRange.to ? new Date(filters.dateRange.to) : null;
 
       result = result.filter(item => {
         if (!item.paymentDate) return false;
@@ -103,29 +98,41 @@ const DiscountsPromotions: React.FC = () => {
       result = result.filter(item => item.calculatedLocation === selectedLocation);
     }
 
-    // Apply other filters
-    if (filters.paymentMethod.length) {
-      result = result.filter(item => filters.paymentMethod.includes(item.paymentMethod));
+    // Apply filters from DiscountFilterSection
+    if (filters.location) {
+      result = result.filter(item => item.calculatedLocation === filters.location);
     }
 
-    if (filters.category.length) {
-      result = result.filter(item => filters.category.includes(item.cleanedCategory));
+    if (filters.paymentMethod) {
+      result = result.filter(item => item.paymentMethod === filters.paymentMethod);
     }
 
-    if (filters.product.length) {
-      result = result.filter(item => filters.product.includes(item.cleanedProduct));
+    if (filters.category) {
+      result = result.filter(item => item.cleanedCategory === filters.category);
     }
 
-    if (filters.soldBy.length) {
-      result = result.filter(item => filters.soldBy.includes(item.soldBy));
+    if (filters.product) {
+      result = result.filter(item => item.cleanedProduct === filters.product);
     }
 
-    if (filters.minDiscount !== undefined) {
-      result = result.filter(item => (item.discountAmount || 0) >= filters.minDiscount!);
+    if (filters.soldBy) {
+      result = result.filter(item => item.soldBy === filters.soldBy);
     }
 
-    if (filters.maxDiscount !== undefined) {
-      result = result.filter(item => (item.discountAmount || 0) <= filters.maxDiscount!);
+    if (filters.minDiscountAmount !== undefined) {
+      result = result.filter(item => (item.discountAmount || 0) >= filters.minDiscountAmount!);
+    }
+
+    if (filters.maxDiscountAmount !== undefined) {
+      result = result.filter(item => (item.discountAmount || 0) <= filters.maxDiscountAmount!);
+    }
+
+    if (filters.minDiscountPercent !== undefined) {
+      result = result.filter(item => (item.discountPercentage || 0) >= filters.minDiscountPercent!);
+    }
+
+    if (filters.maxDiscountPercent !== undefined) {
+      result = result.filter(item => (item.discountPercentage || 0) <= filters.maxDiscountPercent!);
     }
 
     return result;
