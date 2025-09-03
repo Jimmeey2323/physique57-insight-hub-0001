@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getGoogleSheetData } from '@/lib/utils';
+import getGoogleSheetData from '@/lib/utils';
 
 export interface LateCancellationLocationRow {
   location: string;
