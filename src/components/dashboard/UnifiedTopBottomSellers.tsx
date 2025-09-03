@@ -88,115 +88,112 @@ export const UnifiedTopBottomSellers: React.FC<UnifiedTopBottomSellersProps> = (
   const renderSellerCard = (sellers: any[], isTop: boolean, type: string) => {
     const config = getTypeConfig(type);
     const IconComponent = config.icon;
-
+    // Totals row
+    const totals = sellers.reduce(
+      (acc, s) => {
+        acc.totalValue += s.totalValue;
+        acc.unitsSold += s.unitsSold;
+        acc.transactions += s.transactions;
+        acc.uniqueMembers += s.uniqueMembers;
+        return acc;
+      },
+      { totalValue: 0, unitsSold: 0, transactions: 0, uniqueMembers: 0 }
+    );
     return (
-      <Card className="bg-gradient-to-br from-white via-slate-50/50 to-white border-0 shadow-xl hover:shadow-2xl transition-all duration-500">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-3 text-xl">
+      <Card className={cn(
+        "border-0 shadow-2xl transition-all duration-500",
+        isTop
+          ? "bg-gradient-to-br from-gray-900 via-yellow-900/60 to-orange-900/80"
+          : "bg-gradient-to-br from-gray-900 via-red-900/60 to-rose-900/80"
+      )}>
+        <CardHeader className="pb-4 sticky top-0 z-30 bg-gradient-to-r from-yellow-700 to-orange-900 rounded-t-2xl shadow-md flex items-center gap-3">
+          <CardTitle className="flex items-center gap-3 text-xl text-white animate-pulse">
             {isTop ? (
-              <>
-                <div className="p-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
-                  <Award className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <span className="bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-                    Top 5 {config.label}
-                  </span>
-                  <p className="text-sm text-slate-600 font-normal">{config.description}</p>
-                </div>
-              </>
+              <Award className="w-7 h-7 animate-bounce text-yellow-300" />
             ) : (
-              <>
-                <div className="p-2 rounded-full bg-gradient-to-r from-red-400 to-rose-500">
-                  <AlertTriangle className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <span className="bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">
-                    Bottom 5 {config.label}
-                  </span>
-                  <p className="text-sm text-slate-600 font-normal">Areas for improvement</p>
-                </div>
-              </>
+              <AlertTriangle className="w-7 h-7 animate-bounce text-rose-300" />
             )}
+            <span className="font-bold tracking-wide">
+              {isTop ? `Top 5 ${config.label}` : `Bottom 5 ${config.label}`}
+            </span>
+            <span className="ml-2 text-xs font-normal text-yellow-100/80">{config.description}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {sellers.map((seller, index) => (
-            <div 
-              key={seller.name} 
-              className="group flex items-center justify-between p-4 rounded-xl bg-white shadow-sm border hover:shadow-md transition-all duration-300 cursor-pointer"
-              onClick={() => onRowClick?.(seller)}
-            >
-              <div className="flex items-center gap-4 flex-1">
-                <div className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm",
-                  isTop 
-                    ? 'bg-gradient-to-r from-green-400 to-emerald-600 text-white'
-                    : 'bg-gradient-to-r from-red-400 to-rose-600 text-white'
-                )}>
-                  {index + 1}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-slate-900 whitespace-normal break-words group-hover:text-blue-600 transition-colors">
-                    {seller.name}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge variant="secondary" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-                      {formatNumber(seller.transactions)} txns
-                    </Badge>
-                    <Badge variant="outline" className="text-xs border-purple-200 text-purple-700">
-                      ATV: {formatCurrency(seller.atv)}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs border-green-200 text-green-700">
-                      AUV: {formatCurrency(seller.auv)}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs border-orange-200 text-orange-700">
-                      ASV: {formatCurrency(seller.asv)}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs border-slate-200 text-slate-700">
-                      UPT: {seller.upt.toFixed(2)}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-xl text-slate-900 group-hover:text-blue-600 transition-colors">
-                  {formatCurrency(seller.totalValue)}
-                </p>
-                <p className="text-sm text-slate-500">{formatNumber(seller.unitsSold)} units</p>
-                <p className="text-xs text-slate-400">{formatNumber(seller.uniqueMembers)} customers</p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={e => {
-                    e.stopPropagation();
-                    // Filter data for this seller only
-                    const filtered = data.filter(item => {
-                      switch (type) {
-                        case 'product': return item.cleanedProduct === seller.name;
-                        case 'category': return item.cleanedCategory === seller.name;
-                        case 'member': return item.customerName === seller.name;
-                        case 'seller': return item.soldBy === seller.name;
-                        default: return false;
-                      }
-                    });
-                    onRowClick?.({ ...seller, rawData: filtered, type });
-                  }}
-                >
-                  <Eye className="w-3 h-3 mr-1" />
-                  View Details
-                </Button>
-              </div>
-            </div>
-          ))}
-          
-          <div className="mt-6 p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border">
-            <h4 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
+          <div className="overflow-x-auto rounded-lg">
+            <table className="min-w-full bg-transparent border-t border-yellow-900 rounded-lg">
+              <thead className="bg-gradient-to-r from-yellow-700 to-orange-900 text-yellow-100 font-semibold text-sm uppercase tracking-wider sticky top-0 z-20">
+                <tr>
+                  <th className="px-4 py-2 sticky left-0 bg-gradient-to-r from-yellow-700 to-orange-900 z-30 text-left rounded-tl-lg">#</th>
+                  <th className="px-4 py-2 text-left">{config.label.slice(0, -1)} Name</th>
+                  <th className="px-4 py-2 text-center">Txns</th>
+                  <th className="px-4 py-2 text-center">Units</th>
+                  <th className="px-4 py-2 text-center">Customers</th>
+                  <th className="px-4 py-2 text-center">ATV</th>
+                  <th className="px-4 py-2 text-center">AUV</th>
+                  <th className="px-4 py-2 text-center">ASV</th>
+                  <th className="px-4 py-2 text-center">UPT</th>
+                  <th className="px-4 py-2 text-right">Revenue</th>
+                  <th className="px-4 py-2 text-center">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sellers.map((seller, index) => (
+                  <tr key={seller.name} className="hover:bg-yellow-900/30 cursor-pointer border-b border-yellow-800 transition-colors duration-200 group">
+                    <td className="px-4 py-2 sticky left-0 bg-gradient-to-r from-yellow-700 to-orange-900 z-10 text-yellow-100 font-bold">{index + 1}</td>
+                    <td className="px-4 py-2 text-yellow-50 font-semibold whitespace-normal break-words max-w-48">{seller.name}</td>
+                    <td className="px-4 py-2 text-center">{formatNumber(seller.transactions)}</td>
+                    <td className="px-4 py-2 text-center">{formatNumber(seller.unitsSold)}</td>
+                    <td className="px-4 py-2 text-center">{formatNumber(seller.uniqueMembers)}</td>
+                    <td className="px-4 py-2 text-center">{formatCurrency(seller.atv)}</td>
+                    <td className="px-4 py-2 text-center">{formatCurrency(seller.auv)}</td>
+                    <td className="px-4 py-2 text-center">{formatCurrency(seller.asv)}</td>
+                    <td className="px-4 py-2 text-center">{seller.upt.toFixed(2)}</td>
+                    <td className="px-4 py-2 text-right font-bold">{formatCurrency(seller.totalValue)}</td>
+                    <td className="px-4 py-2 text-center">
+                      <Button variant="ghost" size="sm" className="opacity-80 hover:opacity-100 transition-opacity text-yellow-200 hover:text-white" onClick={e => {
+                        e.stopPropagation();
+                        // Drill down: show all sales for this seller
+                        const filtered = data.filter(item => {
+                          switch (type) {
+                            case 'product': return item.cleanedProduct === seller.name;
+                            case 'category': return item.cleanedCategory === seller.name;
+                            case 'member': return item.customerName === seller.name;
+                            case 'seller': return item.soldBy === seller.name;
+                            default: return false;
+                          }
+                        });
+                        onRowClick?.({ ...seller, rawData: filtered, type });
+                      }}>
+                        <Eye className="w-3 h-3 mr-1" />
+                        View Details
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+                {/* Totals Row */}
+                <tr className="bg-gradient-to-r from-yellow-900 to-orange-900 text-yellow-100 font-bold">
+                  <td className="px-4 py-2 sticky left-0 bg-gradient-to-r from-yellow-900 to-orange-900 z-10">TOTAL</td>
+                  <td className="px-4 py-2"></td>
+                  <td className="px-4 py-2 text-center">{formatNumber(totals.transactions)}</td>
+                  <td className="px-4 py-2 text-center">{formatNumber(totals.unitsSold)}</td>
+                  <td className="px-4 py-2 text-center">{formatNumber(totals.uniqueMembers)}</td>
+                  <td className="px-4 py-2 text-center"></td>
+                  <td className="px-4 py-2 text-center"></td>
+                  <td className="px-4 py-2 text-center"></td>
+                  <td className="px-4 py-2 text-center"></td>
+                  <td className="px-4 py-2 text-right">{formatCurrency(totals.totalValue)}</td>
+                  <td className="px-4 py-2"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-6 p-4 bg-gradient-to-r from-yellow-900 to-orange-900 rounded-lg border border-yellow-800/40">
+            <h4 className="font-semibold text-yellow-100 mb-2 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 animate-pulse" />
               Performance Summary
             </h4>
-            <ul className="text-sm text-slate-600 space-y-1">
+            <ul className="text-sm text-yellow-200 space-y-1">
               <li>• Average revenue: {formatCurrency(sellers.reduce((sum, s) => sum + s.totalValue, 0) / sellers.length)}</li>
               <li>• Total transactions: {formatNumber(sellers.reduce((sum, s) => sum + s.transactions, 0))}</li>
               <li>• Combined customer reach: {formatNumber(sellers.reduce((sum, s) => sum + s.uniqueMembers, 0))} unique customers</li>
