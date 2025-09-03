@@ -108,6 +108,29 @@ const ClientRetention = () => {
     
     let filtered = data;
     
+    // Apply date range filter FIRST
+    if (filters.dateRange.start || filters.dateRange.end) {
+      const startDate = filters.dateRange.start ? new Date(filters.dateRange.start) : null;
+      const endDate = filters.dateRange.end ? new Date(filters.dateRange.end) : null;
+
+      filtered = filtered.filter(client => {
+        if (!client.firstVisitDate) return false;
+        
+        let clientDate: Date;
+        if (client.firstVisitDate.includes('/')) {
+          const [day, month, year] = client.firstVisitDate.split(' ')[0].split('/');
+          clientDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        } else {
+          clientDate = new Date(client.firstVisitDate);
+        }
+        
+        if (isNaN(clientDate.getTime())) return false;
+        if (startDate && clientDate < startDate) return false;
+        if (endDate && clientDate > endDate) return false;
+        return true;
+      });
+    }
+    
     // Apply location filter
     if (selectedLocation !== 'All Locations') {
       filtered = filtered.filter(client => {
