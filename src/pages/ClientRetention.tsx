@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, TrendingUp, Target, Users as UsersIcon, Eye, Calendar, Filter, PieChart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { NewClientFilterOptions } from '@/types/dashboard';
+import { getPreviousMonthDateRange } from '@/utils/dateUtils';
 
 // Import enhanced components
 import { ClientConversionLocationSelector } from '@/components/dashboard/ClientConversionLocationSelector';
@@ -31,17 +32,20 @@ const ClientRetention = () => {
   const [activeTab, setActiveTab] = useState('overview');
   
   // Filters state
-  const [filters, setFilters] = useState<NewClientFilterOptions>({
-    dateRange: { start: '', end: '' },
-    location: [],
-    homeLocation: [],
-    trainer: [],
-    paymentMethod: [],
-    retentionStatus: [],
-    conversionStatus: [],
-    isNew: [],
-    minLTV: undefined,
-    maxLTV: undefined
+  const [filters, setFilters] = useState<NewClientFilterOptions>(() => {
+    const previousMonth = getPreviousMonthDateRange();
+    return {
+      dateRange: previousMonth,
+      location: [],
+      homeLocation: [],
+      trainer: [],
+      paymentMethod: [],
+      retentionStatus: [],
+      conversionStatus: [],
+      isNew: [],
+      minLTV: undefined,
+      maxLTV: undefined
+    };
   });
 
   useEffect(() => {

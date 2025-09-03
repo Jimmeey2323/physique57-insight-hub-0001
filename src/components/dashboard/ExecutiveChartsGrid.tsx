@@ -173,30 +173,26 @@ export const ExecutiveChartsGrid: React.FC<ExecutiveChartsGridProps> = ({ data, 
           <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
             <CardTitle className="flex items-center gap-2">
               <Activity className="w-5 h-5" />
-              Class Type Distribution
+              Class Type Performance
               <Badge className="bg-white/20 text-white">{data.sessions.length} sessions</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={sessionTypeData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {sessionTypeData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
+              <BarChart data={sessionTypeData.slice(0, 6)}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="name" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={100}
+                  fontSize={12}
+                />
+                <YAxis />
                 <Tooltip />
                 <Legend />
-              </PieChart>
+                <Bar dataKey="value" fill="#8B5CF6" name="Sessions" />
+              </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>

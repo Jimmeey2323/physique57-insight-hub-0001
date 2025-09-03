@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar, Filter, RotateCcw, MapPin, Users, Target, ChevronDown, ChevronUp, CreditCard, Package } from 'lucide-react';
 import { DatePickerWithRange } from '@/components/ui/date-picker';
 import { NewClientFilterOptions } from '@/types/dashboard';
+import { getPreviousMonthDateRange } from '@/utils/dateUtils';
 
 interface ClientConversionFilterSectionProps {
   filters: NewClientFilterOptions;
@@ -71,8 +72,9 @@ export const ClientConversionFilterSection: React.FC<ClientConversionFilterSecti
   };
 
   const resetFilters = () => {
+    const previousMonth = getPreviousMonthDateRange();
     onFiltersChange({
-      dateRange: { start: '', end: '' },
+      dateRange: previousMonth,
       location: [],
       homeLocation: [],
       trainer: [],

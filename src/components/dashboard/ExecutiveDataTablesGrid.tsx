@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ModernDataTable } from '@/components/ui/ModernDataTable';
+import { UniversalDrillDownModal } from '@/components/dashboard/UniversalDrillDownModal';
 import { 
   DollarSign, 
   Users, 
@@ -26,6 +27,51 @@ interface ExecutiveDataTablesGridProps {
 }
 
 export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = ({ data }) => {
+  const [drillDownModal, setDrillDownModal] = useState<{
+    isOpen: boolean;
+    data: any;
+    relatedData: any[];
+    type: string;
+    title: string;
+  }>({
+    isOpen: false,
+    data: null,
+    relatedData: [],
+    type: '',
+    title: ''
+  });
+
+  const handleRowClick = (item: any, type: string, title: string) => {
+    let relatedData: any[] = [];
+    
+    switch (type) {
+      case 'sales':
+        relatedData = data.sales;
+        break;
+      case 'sessions':
+        relatedData = data.sessions;
+        break;
+      case 'newClients':
+        relatedData = data.newClients;
+        break;
+      case 'trainers':
+        relatedData = data.payroll;
+        break;
+      case 'leads':
+        relatedData = data.leads;
+        break;
+      default:
+        relatedData = [];
+    }
+
+    setDrillDownModal({
+      isOpen: true,
+      data: item,
+      relatedData,
+      type: type === 'trainers' ? 'trainer' : type.slice(0, -1), // Remove 's' from plural
+      title
+    });
+  };
   // Sales Performance Table
   const salesColumns = [
     { key: 'customerName', header: 'Customer', align: 'left' as const },
@@ -38,7 +84,7 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
   // Sessions Performance Table
   const sessionsColumns = [
     { key: 'cleanedClass', header: 'Class Type', align: 'left' as const },
-    { key: 'trainerName', header: 'Trainer', align: 'left' as const },
+    { key: 'instructor', header: 'Trainer', align: 'left' as const },
     { key: 'checkedInCount', header: 'Attendance', align: 'center' as const },
     { key: 'capacity', header: 'Capacity', align: 'center' as const },
     { key: 'fillPercentage', header: 'Fill %', align: 'center' as const, render: (value: number) => `${Math.round(value || 0)}%` },
@@ -65,12 +111,24 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
 
   // Lead Conversion Table
   const leadsColumns = [
-    { key: 'firstName', header: 'First Name', align: 'left' as const },
-    { key: 'lastName', header: 'Last Name', align: 'left' as const },
+    { key: 'fullName', header: 'Full Name', align: 'left' as const },
     { key: 'source', header: 'Source', align: 'left' as const },
+    { key: 'stage', header: 'Stage', align: 'center' as const },
     { key: 'conversionStatus', header: 'Status', align: 'center' as const },
-    { key: 'ltv', header: 'LTV', align: 'right' as const, render: (value: number) => formatCurrency(value) }
+    { key: 'ltv', header: 'LTV', align: 'right' as const, render: (value: number) => formatCurrency(value || 0) }
   ];
+
+  // Debug data availability
+  console.log('Executive Data Debug:', {
+    sales: data.sales.length,
+    sessions: data.sessions.length,
+    payroll: data.payroll.length,
+    newClients: data.newClients.length,
+    leads: data.leads.length,
+    payrollSample: data.payroll[0],
+    newClientsSample: data.newClients[0],
+    leadsSample: data.leads[0]
+  });
 
   // Top Products Table
   const productPerformance = React.useMemo(() => {
@@ -187,6 +245,7 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
             columns={salesColumns}
             maxHeight="400px"
             stickyHeader={true}
+            onRowClick={(item) => handleRowClick(item, 'sales', 'Sales Transaction')}
           />
         </CardContent>
       </Card>
@@ -206,6 +265,7 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
             columns={sessionsColumns}
             maxHeight="400px"
             stickyHeader={true}
+            onRowClick={(item) => handleRowClick(item, 'sessions', 'Session Details')}
           />
         </CardContent>
       </Card>
@@ -225,6 +285,7 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
             columns={newClientsColumns}
             maxHeight="400px"
             stickyHeader={true}
+            onRowClick={(item) => handleRowClick(item, 'newClients', 'New Client')}
           />
         </CardContent>
       </Card>
@@ -244,6 +305,7 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
             columns={trainerColumns}
             maxHeight="400px"
             stickyHeader={true}
+            onRowClick={(item) => handleRowClick(item, 'trainers', 'Trainer Performance')}
           />
         </CardContent>
       </Card>
@@ -263,6 +325,7 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
             columns={leadsColumns}
             maxHeight="400px"
             stickyHeader={true}
+            onRowClick={(item) => handleRowClick(item, 'leads', 'Lead Details')}
           />
         </CardContent>
       </Card>
@@ -282,6 +345,7 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
             columns={productColumns}
             maxHeight="400px"
             stickyHeader={true}
+            onRowClick={(item) => handleRowClick(item, 'sales', 'Product Performance')}
           />
         </CardContent>
       </Card>
@@ -301,6 +365,7 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
             columns={summaryColumns}
             maxHeight="400px"
             stickyHeader={true}
+            onRowClick={(item) => handleRowClick(item, 'sales', 'Monthly Summary')}
           />
         </CardContent>
       </Card>
@@ -320,9 +385,20 @@ export const ExecutiveDataTablesGrid: React.FC<ExecutiveDataTablesGridProps> = (
             columns={classColumns}
             maxHeight="400px"
             stickyHeader={true}
+            onRowClick={(item) => handleRowClick(item, 'sessions', 'Class Performance')}
           />
         </CardContent>
       </Card>
+
+      {/* Universal Drill Down Modal */}
+      <UniversalDrillDownModal
+        isOpen={drillDownModal.isOpen}
+        onClose={() => setDrillDownModal(prev => ({ ...prev, isOpen: false }))}
+        data={drillDownModal.data}
+        relatedData={drillDownModal.relatedData}
+        type={drillDownModal.type as any}
+        title={drillDownModal.title}
+      />
     </div>
   );
 };

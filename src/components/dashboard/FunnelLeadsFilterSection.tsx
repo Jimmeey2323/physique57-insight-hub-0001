@@ -29,6 +29,7 @@ import {
 import { DatePickerWithRange } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { LeadsFilterOptions } from '@/types/leads';
+import { getPreviousMonthDateRange } from '@/utils/dateUtils';
 
 interface FunnelLeadsFilterSectionProps {
   filters: LeadsFilterOptions;
@@ -74,8 +75,9 @@ export const FunnelLeadsFilterSection: React.FC<FunnelLeadsFilterSectionProps> =
   };
 
   const clearAllFilters = () => {
+    const previousMonth = getPreviousMonthDateRange();
     onFiltersChange({
-      dateRange: { start: '', end: '' },
+      dateRange: previousMonth,
       location: [],
       source: [],
       stage: [],

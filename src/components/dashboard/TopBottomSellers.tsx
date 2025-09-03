@@ -126,7 +126,7 @@ export const TopBottomSellers: React.FC<TopBottomSellersProps> = ({ data, type, 
                 {index + 1}
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-slate-900 truncate max-w-40 group-hover:text-blue-600 transition-colors">
+                <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
                   {seller.name || seller.Trainer}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -185,7 +185,15 @@ export const TopBottomSellers: React.FC<TopBottomSellersProps> = ({ data, type, 
                   <p className="text-xs text-slate-400">{formatNumber(seller.uniqueMembers)} customers</p>
                 </>
               )}
-              <Button variant="ghost" size="sm" className="mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRowClick?.(seller);
+                }}
+                className="mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
                 <Eye className="w-3 h-3 mr-1" />
                 View Details
               </Button>

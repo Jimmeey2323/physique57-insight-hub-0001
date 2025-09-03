@@ -18,6 +18,7 @@ import { FunnelSourceStageListsContainer } from '@/components/dashboard/FunnelSo
 import { FunnelHealthMetricsTable } from '@/components/dashboard/FunnelHealthMetricsTable';
 import { FunnelStageAnalytics } from '@/components/dashboard/FunnelStageAnalytics';
 import { LeadsFilterOptions } from '@/types/leads';
+import { getPreviousMonthDateRange } from '@/utils/dateUtils';
 
 export default function FunnelLeads() {
   const { data: allLeadsData, loading, error } = useLeadsData();
@@ -25,19 +26,22 @@ export default function FunnelLeads() {
   
   const [activeLocation, setActiveLocation] = useState('all');
   const [filtersCollapsed, setFiltersCollapsed] = useState(true);
-  const [filters, setFilters] = useState<LeadsFilterOptions>({
-    dateRange: { start: '', end: '' },
-    location: [],
-    source: [],
-    stage: [],
-    status: [],
-    associate: [],
-    channel: [],
-    trialStatus: [],
-    conversionStatus: [],
-    retentionStatus: [],
-    minLTV: undefined,
-    maxLTV: undefined
+  const [filters, setFilters] = useState<LeadsFilterOptions>(() => {
+    const previousMonth = getPreviousMonthDateRange();
+    return {
+      dateRange: previousMonth,
+      location: [],
+      source: [],
+      stage: [],
+      status: [],
+      associate: [],
+      channel: [],
+      trialStatus: [],
+      conversionStatus: [],
+      retentionStatus: [],
+      minLTV: undefined,
+      maxLTV: undefined
+    };
   });
 
   // Define locations
