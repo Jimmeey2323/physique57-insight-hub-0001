@@ -227,6 +227,47 @@ const ClientRetention = () => {
             onLocationChange={setSelectedLocation}
           />
 
+          {/* Quick Filter Buttons */}
+          <Card className="bg-white shadow-sm border border-gray-200">
+            <CardContent className="p-4">
+              <div className="flex flex-wrap gap-3 items-center">
+                <span className="text-sm font-medium text-gray-600">Quick Filters:</span>
+                <Button
+                  variant={selectedLocation === 'All Locations' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedLocation('All Locations')}
+                  className="text-xs"
+                >
+                  All Locations
+                </Button>
+                <Button
+                  variant={selectedLocation === 'Kwality House, Kemps Corner' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedLocation('Kwality House, Kemps Corner')}
+                  className="text-xs"
+                >
+                  Kemps Corner
+                </Button>
+                <Button
+                  variant={selectedLocation === 'Supreme HQ, Bandra' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedLocation('Supreme HQ, Bandra')}
+                  className="text-xs"
+                >
+                  Bandra
+                </Button>
+                <Button
+                  variant={selectedLocation === 'Kenkere House, Bengaluru' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedLocation('Kenkere House, Bengaluru')}
+                  className="text-xs"
+                >
+                  Bengaluru
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Enhanced Filter Section */}
           <EnhancedClientConversionFilterSection
             filters={filters}
@@ -235,6 +276,37 @@ const ClientRetention = () => {
             trainers={uniqueTrainers}
             membershipTypes={uniqueMembershipTypes}
           />
+
+          {/* Location Performance Tabs */}
+          <Card className="bg-white shadow-sm border border-gray-200">
+            <CardContent className="p-4">
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={selectedLocation === 'All Locations' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSelectedLocation('All Locations')}
+                  className="gap-2"
+                >
+                  <Users className="w-4 h-4" />
+                  All Locations ({data.length})
+                </Button>
+                {uniqueLocations.map((location) => (
+                  <Button
+                    key={location}
+                    variant={selectedLocation === location ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setSelectedLocation(location)}
+                    className="gap-2"
+                  >
+                    <Users className="w-4 h-4" />
+                    {location.split(',')[0]} ({data.filter(client => 
+                      client.firstVisitLocation === location || client.homeLocation === location
+                    ).length})
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Main Content Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
