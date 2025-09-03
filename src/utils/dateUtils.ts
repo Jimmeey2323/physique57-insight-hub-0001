@@ -1,7 +1,9 @@
 
 export const getPreviousMonthDateRange = () => {
   const now = new Date();
+  // Get the first day of the previous month
   const firstDayPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  // Get the last day of the previous month
   const lastDayPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
   
   return {

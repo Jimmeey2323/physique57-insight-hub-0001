@@ -29,7 +29,11 @@ const Index = () => {
     refetch
   } = useGoogleSheets();
   const handleSectionClick = useCallback((sectionId: string) => {
-    navigate(`/${sectionId}`);
+    if (sectionId === 'class-performance-series') {
+      window.open('https://class-performance-series-001.vercel.app/', '_blank');
+    } else {
+      navigate(`/${sectionId}`);
+    }
   }, [navigate]);
   const handleRetry = useCallback(() => {
     refetch();

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BarChart3, TrendingUp, Users, UserCheck, Calendar, Tag, ChevronRight, BarChart2, Target } from "lucide-react";
+import { BarChart3, TrendingUp, Users, UserCheck, Calendar, Tag, ChevronRight, BarChart2, Target, ExternalLink } from "lucide-react";
 
 // Utility function for className merging
 function cn(...classes: (string | undefined | null | false)[]): string {
@@ -100,6 +100,15 @@ const defaultButtons: DashboardButton[] = [{
   gradient: "from-violet-50 to-violet-100",
   hoverColor: "hover:border-violet-300",
   bgGradient: "from-violet-600 to-violet-700"
+}, {
+  id: "class-performance-series",
+  label: "Class Performance Series",
+  description: "Advanced Class Performance Analytics Dashboard",
+  icon: <ExternalLink size={28} />,
+  color: "text-rose-700",
+  gradient: "from-rose-50 to-rose-100",
+  hoverColor: "hover:border-rose-300",
+  bgGradient: "from-rose-600 to-rose-700"
 }];
 export function DashboardGrid({
   buttons = defaultButtons,
