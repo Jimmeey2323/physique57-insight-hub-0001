@@ -20,6 +20,7 @@ export const EnhancedTrainerPerformanceSection = () => {
   const [selectedTrainer, setSelectedTrainer] = useState<string | null>(null);
   const [drillDownData, setDrillDownData] = useState<any>(null);
   const [isFiltersCollapsed, setIsFiltersCollapsed] = useState(true);
+  const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [filters, setFilters] = useState({ location: '', trainer: '', month: '' });
 
   const processedData = useMemo(() => {
@@ -27,6 +28,9 @@ export const EnhancedTrainerPerformanceSection = () => {
     let data = processTrainerData(payrollData);
     
     // Apply filters
+    if (selectedLocation !== 'All Locations') {
+      data = data.filter(d => d.location === selectedLocation);
+    }
     if (filters.location) {
       data = data.filter(d => d.location === filters.location);
     }
@@ -38,7 +42,7 @@ export const EnhancedTrainerPerformanceSection = () => {
     }
     
     return data;
-  }, [payrollData, filters]);
+  }, [payrollData, filters, selectedLocation]);
 
   const handleRowClick = (trainer: string, data: any) => {
     setSelectedTrainer(trainer);
@@ -156,13 +160,41 @@ export const EnhancedTrainerPerformanceSection = () => {
 
   return (
     <div className="space-y-6">
-      {/* Filter Section */}
-      <TrainerFilterSection
-        data={payrollData || []}
-        onFiltersChange={setFilters}
-        isCollapsed={isFiltersCollapsed}
-        onToggleCollapse={() => setIsFiltersCollapsed(!isFiltersCollapsed)}
-      />
+      {/* Location Tabs and Filter Section */}
+      <div className="space-y-4">
+        <Card className="bg-white shadow-xl border-0">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              Location Performance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['All Locations', ...Array.from(new Set(processedData.map(d => d.location)))].map((location) => (
+                <button
+                  key={location}
+                  onClick={() => setSelectedLocation(location)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    selectedLocation === location
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {location}
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <TrainerFilterSection
+          data={payrollData || []}
+          onFiltersChange={setFilters}
+          isCollapsed={isFiltersCollapsed}
+          onToggleCollapse={() => setIsFiltersCollapsed(!isFiltersCollapsed)}
+        />
+      </div>
 
       {/* Metric Cards */}
       {summaryStats && (

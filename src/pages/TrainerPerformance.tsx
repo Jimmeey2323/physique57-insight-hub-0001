@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { SectionLayout } from '@/components/layout/SectionLayout';
 import { EnhancedTrainerPerformanceSection } from '@/components/dashboard/EnhancedTrainerPerformanceSection';
-import { RefinedLoader } from '@/components/ui/RefinedLoader';
+import { ProfessionalLoader } from '@/components/dashboard/ProfessionalLoader';
 import { usePayrollData } from '@/hooks/usePayrollData';
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +20,7 @@ const TrainerPerformance = () => {
   }, [isLoading, setLoading]);
 
   if (globalLoading) {
-    return <RefinedLoader subtitle="Analyzing trainer performance metrics and insights..." />;
+    return <ProfessionalLoader variant="analytics" subtitle="Analyzing trainer performance metrics and insights..." />;
   }
 
   return (

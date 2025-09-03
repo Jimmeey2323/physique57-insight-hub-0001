@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessionsData } from '@/hooks/useSessionsData';
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
-import { RefinedLoader } from '@/components/ui/RefinedLoader';
+import { ProfessionalLoader } from '@/components/dashboard/ProfessionalLoader';
 import { PowerCycleVsBarreSection } from '@/components/dashboard/PowerCycleVsBarreSection';
 import { SessionsFiltersProvider } from '@/contexts/SessionsFiltersContext';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ const PowerCycleVsBarre = () => {
   }, [loading, setLoading]);
 
   if (isLoading) {
-    return <RefinedLoader subtitle="Loading PowerCycle vs Barre performance data..." />;
+    return <ProfessionalLoader variant="analytics" subtitle="Loading PowerCycle vs Barre performance data..." />;
   }
 
   return (

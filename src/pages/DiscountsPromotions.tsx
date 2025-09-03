@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { RefinedLoader } from '@/components/ui/RefinedLoader';
+import { ProfessionalLoader } from '@/components/dashboard/ProfessionalLoader';
 import { useDiscountsData } from '@/hooks/useDiscountsData';
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import { DiscountFilterSection } from '@/components/dashboard/DiscountFilterSection';
@@ -11,6 +11,7 @@ import { DiscountMonthOnMonthTable } from '@/components/dashboard/DiscountMonthO
 import { DiscountYearOnYearTable } from '@/components/dashboard/DiscountYearOnYearTable';
 import { DiscountDataTable } from '@/components/dashboard/DiscountDataTable';
 import { DrillDownModal } from '@/components/dashboard/DrillDownModal';
+import { ComprehensiveDiscountsSection } from '@/components/dashboard/ComprehensiveDiscountsSection';
 import { EnhancedStickyNotes } from '@/components/ui/EnhancedStickyNotes';
 import { Button } from '@/components/ui/button';
 import { Home, TrendingDown, Percent, DollarSign, Package, Target, FileText } from 'lucide-react';
@@ -161,16 +162,16 @@ const DiscountsPromotions: React.FC = () => {
     };
   }, [filteredData]);
 
-  const handleDrillDown = (title: string, data: any[], type: string) => {
+  const handleDrillDown = (title: string, data: any[]) => {
     setDrillDownModal({
       isOpen: true,
-      data: { title, rawData: data, type },
-      type
+      data: { title, rawData: data, type: 'discount' },
+      type: 'discount'
     });
   };
 
   if (loading) {
-    return <RefinedLoader subtitle="Loading discount and promotional analysis..." />;
+    return <ProfessionalLoader variant="sales" subtitle="Loading discount and promotional analysis..." />;
   }
 
   if (error) {
@@ -342,36 +343,10 @@ const DiscountsPromotions: React.FC = () => {
             onLocationChange={setSelectedLocation}
           />
 
-          <DiscountMetricCards
+          <ComprehensiveDiscountsSection
             data={filteredData}
             filters={filters}
             onDrillDown={handleDrillDown}
-          />
-
-          <DiscountInteractiveCharts
-            data={filteredData}
-            filters={filters}
-          />
-
-          <DiscountInteractiveTopBottomLists
-            data={filteredData}
-            filters={filters}
-            onDrillDown={handleDrillDown}
-          />
-
-          <DiscountMonthOnMonthTable
-            data={filteredData}
-            filters={filters}
-          />
-
-          <DiscountYearOnYearTable
-            data={filteredData}
-            filters={filters}
-          />
-
-          <DiscountDataTable
-            data={filteredData}
-            filters={filters}
           />
         </main>
       </div>

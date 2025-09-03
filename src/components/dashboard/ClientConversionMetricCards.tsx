@@ -7,9 +7,10 @@ import { NewClientData } from '@/types/dashboard';
 
 interface ClientConversionMetricCardsProps {
   data: NewClientData[];
+  onDrillDown?: (metric: string, data: any[]) => void;
 }
 
-export const ClientConversionMetricCards: React.FC<ClientConversionMetricCardsProps> = ({ data }) => {
+export const ClientConversionMetricCards: React.FC<ClientConversionMetricCardsProps> = ({ data, onDrillDown }) => {
   const totalClients = data.length;
   
   // Fix new members calculation to match table - count rows where isNew contains "New"
@@ -90,7 +91,18 @@ export const ClientConversionMetricCards: React.FC<ClientConversionMetricCardsPr
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {metrics.map((metric, index) => (
-        <Card key={metric.title} className="bg-white shadow-xl border-0 overflow-hidden hover:shadow-2xl transition-all duration-300 group">
+        <Card 
+          key={metric.title} 
+          className="bg-white shadow-xl border-0 overflow-hidden hover:shadow-2xl transition-all duration-300 group cursor-pointer"
+          onClick={() => onDrillDown?.(metric.title, data.filter(client => {
+            switch(metric.title) {
+              case 'New Members': return String(client.isNew || '').toLowerCase().includes('new');
+              case 'Conversion Rate': return client.conversionStatus === 'Converted';
+              case 'Retention Rate': return client.retentionStatus === 'Retained';
+              default: return true;
+            }
+          }))}
+        >
           <CardContent className="p-0">
             <div className={`bg-gradient-to-r ${metric.gradient} p-6 text-white relative overflow-hidden`}>
               <div className="absolute top-0 right-0 w-20 h-20 transform translate-x-8 -translate-y-8 opacity-20">

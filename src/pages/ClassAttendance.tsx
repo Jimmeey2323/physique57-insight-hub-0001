@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { SectionLayout } from '@/components/layout/SectionLayout';
 import { ClassAttendanceSection } from '@/components/dashboard/ClassAttendanceSection';
-import { RefinedLoader } from '@/components/ui/RefinedLoader';
+import { ProfessionalLoader } from '@/components/dashboard/ProfessionalLoader';
 import { useRecurringSessionsData } from '@/hooks/useRecurringSessionsData';
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +20,7 @@ const ClassAttendance = () => {
   }, [loading, setLoading]);
 
   if (isLoading) {
-    return <RefinedLoader subtitle="Processing class attendance analytics and trends..." />;
+    return <ProfessionalLoader variant="analytics" subtitle="Processing class attendance analytics and trends..." />;
   }
 
   return (

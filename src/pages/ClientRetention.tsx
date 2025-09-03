@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Home, Users } from 'lucide-react';
 import { Footer } from '@/components/ui/footer';
-import { RefinedLoader } from '@/components/ui/RefinedLoader';
+import { ProfessionalLoader } from '@/components/dashboard/ProfessionalLoader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, TrendingUp, Target, Users as UsersIcon, Eye, Calendar, Filter, PieChart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -168,7 +168,7 @@ const ClientRetention = () => {
   }, [data, selectedLocation, filters]);
 
   if (isLoading) {
-    return <RefinedLoader subtitle="Analyzing client conversion and retention patterns..." />;
+    return <ProfessionalLoader variant="conversion" subtitle="Analyzing client conversion and retention patterns..." />;
   }
 
   console.log('Rendering ClientRetention with data:', data.length, 'records, filtered:', filteredData.length);
