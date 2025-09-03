@@ -6,9 +6,15 @@ export const getPreviousMonthDateRange = () => {
   // Get the last day of the previous month
   const lastDayPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
   
+  // Use local date strings to avoid timezone issues
+  const startString = `${firstDayPreviousMonth.getFullYear()}-${String(firstDayPreviousMonth.getMonth() + 1).padStart(2, '0')}-${String(firstDayPreviousMonth.getDate()).padStart(2, '0')}`;
+  const endString = `${lastDayPreviousMonth.getFullYear()}-${String(lastDayPreviousMonth.getMonth() + 1).padStart(2, '0')}-${String(lastDayPreviousMonth.getDate()).padStart(2, '0')}`;
+  
+  console.log('Previous month date range:', { start: startString, end: endString, firstDay: firstDayPreviousMonth, lastDay: lastDayPreviousMonth });
+  
   return {
-    start: firstDayPreviousMonth.toISOString().split('T')[0],
-    end: lastDayPreviousMonth.toISOString().split('T')[0]
+    start: startString,
+    end: endString
   };
 };
 
