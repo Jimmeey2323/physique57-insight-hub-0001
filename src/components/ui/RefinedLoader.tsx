@@ -52,8 +52,9 @@ export const RefinedLoader: React.FC<RefinedLoaderProps> = ({
         </div>
 
         {/* Progress Indicator */}
-        <div className="w-64 h-1 bg-gray-200 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full animate-pulse"></div>
+        <div className="w-64 h-2 bg-gray-300 rounded-full overflow-hidden relative">
+          {/* Animated bar: left-to-right fill, then right-to-left fill */}
+          <div className="absolute left-0 top-0 h-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-full animate-loader-bar" style={{ width: '100%' }}></div>
         </div>
       </div>
 
