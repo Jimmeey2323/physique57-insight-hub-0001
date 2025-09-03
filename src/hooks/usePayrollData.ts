@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { PayrollData } from '@/types/dashboard';
 
@@ -20,9 +19,7 @@ export const usePayrollData = () => {
     try {
       const response = await fetch(GOOGLE_CONFIG.TOKEN_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
           client_id: GOOGLE_CONFIG.CLIENT_ID,
           client_secret: GOOGLE_CONFIG.CLIENT_SECRET,
@@ -42,7 +39,7 @@ export const usePayrollData = () => {
   const parseNumericValue = (value: string | number): number => {
     if (typeof value === 'number') return value;
     if (!value || value === '') return 0;
-    
+
     const cleaned = value.toString().replace(/,/g, '');
     const parsed = parseFloat(cleaned);
     return isNaN(parsed) ? 0 : parsed;
@@ -52,13 +49,11 @@ export const usePayrollData = () => {
     try {
       setIsLoading(true);
       const accessToken = await getAccessToken();
-      
+
       const response = await fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Payroll?alt=json`,
         {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-          },
+          headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
 
@@ -68,13 +63,13 @@ export const usePayrollData = () => {
 
       const result = await response.json();
       const rows = result.values || [];
-      
+
       if (rows.length < 2) {
         setData([]);
         return;
       }
 
-            const payrollData: PayrollData[] = rows.slice(1).map((row: any[]) => ({        
+      const payrollData: PayrollData[] = rows.slice(1).map((row: any[]) => ({
         teacherId: row[0] || '',
         teacherName: row[1] || '',
         teacherEmail: row[2] || '',
