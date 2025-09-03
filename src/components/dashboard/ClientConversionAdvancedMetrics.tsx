@@ -2,19 +2,66 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, Award } from 'lucide-react';
+import { Users, Award, Calendar, BarChart3, UserCheck, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { NewClientData } from '@/types/dashboard';
 import { ModernDataTable } from '@/components/ui/ModernDataTable';
 
-interface ClientConversionAdvancedMetricsProps {
   data: NewClientData[];
+  // Optionally allow passing payroll data for richer metrics
+  payrollData?: any[];
 }
 
-export const ClientConversionAdvancedMetrics: React.FC<ClientConversionAdvancedMetricsProps> = ({ data }) => {
   console.log('ClientConversionAdvancedMetrics data:', data.length, 'records');
 
-  // Membership performance analysis
+  // --- Hosted class detection helper ---
+  const isHostedClass = (entity: string = '') => {
+    if (!entity) return false;
+    return /host|hosted|birthday|rugby|outdoor|x|p57|sign|link|influencer/i.test(entity);
+  };
+
+  // --- Month-Year extraction helper ---
+  const getMonthYear = (dateStr: string = '', fallback: string = '') => {
+    if (!dateStr) return fallback;
+    // Try DD/MM/YYYY or YYYY-MM-DD or similar
+    const d = dateStr.includes('/') ? dateStr.split(/[ ,]/)[0].split('/') : dateStr.split('-');
+    if (d.length >= 3) {
+      const year = d[2].length === 4 ? d[2] : d[0];
+      const month = d[1].length === 2 ? d[1] : d[1].padStart(2, '0');
+      return `${year}-${month}`;
+    }
+    return fallback;
+  };
+
+  // --- Hosted class month-on-month stats ---
+  const hostedClassMoM = React.useMemo(() => {
+    const stats: Record<string, { total: number; converted: number; retained: number; newClients: number }> = {};
+    data.forEach(client => {
+      if (isHostedClass(client.firstVisitEntityName)) {
+        const month = client.monthYear || getMonthYear(client.firstVisitDate, 'Unknown');
+        if (!stats[month]) stats[month] = { total: 0, converted: 0, retained: 0, newClients: 0 };
+        stats[month].total++;
+        if ((client.isNew || '').toLowerCase().includes('new')) stats[month].newClients++;
+        if ((client.conversionStatus || '').toLowerCase().includes('converted')) stats[month].converted++;
+        if ((client.retentionStatus || '').toLowerCase().includes('retained')) stats[month].retained++;
+      }
+    });
+    // Convert to sorted array
+    return Object.entries(stats).sort(([a], [b]) => a.localeCompare(b)).map(([month, stat]) => ({ month, ...stat }));
+  }, [data]);
+
+  // --- Summary metrics ---
+  const totalClients = data.length;
+  const totalNew = data.filter(c => (c.isNew || '').toLowerCase().includes('new')).length;
+  const totalConverted = data.filter(c => (c.conversionStatus || '').toLowerCase().includes('converted')).length;
+  const totalRetained = data.filter(c => (c.retentionStatus || '').toLowerCase().includes('retained')).length;
+  const avgLTV = totalClients > 0 ? data.reduce((sum, c) => sum + (c.ltv || 0), 0) / totalClients : 0;
+  const avgConversionSpan = (() => {
+    const spans = data.map(c => c.conversionSpan).filter(Boolean);
+    return spans.length > 0 ? spans.reduce((a, b) => a + b, 0) / spans.length : 0;
+  })();
+
+  // --- Membership performance analysis ---
   const membershipStats = React.useMemo(() => {
     const stats = data.reduce((acc, client) => {
       const membership = client.membershipUsed || 'No Membership';
@@ -30,8 +77,8 @@ export const ClientConversionAdvancedMetrics: React.FC<ClientConversionAdvancedM
       }
       
       acc[membership].totalClients++;
-      if (client.conversionStatus === 'Converted') acc[membership].converted++;
-      if (client.retentionStatus === 'Retained') acc[membership].retained++;
+  if ((client.conversionStatus || '').toLowerCase().includes('converted')) acc[membership].converted++;
+  if ((client.retentionStatus || '').toLowerCase().includes('retained')) acc[membership].retained++;
       acc[membership].totalLTV += client.ltv || 0;
       if (client.conversionSpan && client.conversionSpan > 0) {
         acc[membership].conversionSpans.push(client.conversionSpan);
@@ -55,6 +102,7 @@ export const ClientConversionAdvancedMetrics: React.FC<ClientConversionAdvancedM
   }, [data]);
 
   // Trainer performance analysis
+  // --- Trainer performance analysis ---
   const trainerStats = React.useMemo(() => {
     const stats = data.reduce((acc, client) => {
       const trainer = client.trainerName || 'No Trainer';
@@ -70,8 +118,8 @@ export const ClientConversionAdvancedMetrics: React.FC<ClientConversionAdvancedM
       }
       
       acc[trainer].totalClients++;
-      if (client.conversionStatus === 'Converted') acc[trainer].converted++;
-      if (client.retentionStatus === 'Retained') acc[trainer].retained++;
+  if ((client.conversionStatus || '').toLowerCase().includes('converted')) acc[trainer].converted++;
+  if ((client.retentionStatus || '').toLowerCase().includes('retained')) acc[trainer].retained++;
       acc[trainer].totalLTV += client.ltv || 0;
       if (client.classNo && client.classNo > 0) {
         acc[trainer].classNumbers.push(client.classNo);
@@ -94,11 +142,18 @@ export const ClientConversionAdvancedMetrics: React.FC<ClientConversionAdvancedM
     return processed;
   }, [data]);
 
+  // --- Membership columns (add isNew) ---
   const membershipColumns = [
     {
       key: 'membershipType',
       header: 'Membership Type',
       className: 'font-semibold min-w-[200px]'
+    },
+    {
+      key: 'isNew',
+      header: 'Is New',
+      align: 'center' as const,
+      render: (_: any, row: any) => <span className="font-semibold">{row.isNew || ''}</span>
     },
     {
       key: 'totalClients',
@@ -144,6 +199,7 @@ export const ClientConversionAdvancedMetrics: React.FC<ClientConversionAdvancedM
     }
   ];
 
+  // --- Trainer columns ---
   const trainerColumns = [
     {
       key: 'trainerName',
@@ -224,7 +280,59 @@ export const ClientConversionAdvancedMetrics: React.FC<ClientConversionAdvancedM
 
   return (
     <div className="space-y-8">
-      {/* Membership Performance Table */}
+      {/* --- Summary Metric Cards --- */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg p-4 flex flex-col items-center">
+          <UserCheck className="w-6 h-6 text-purple-600 mb-2" />
+          <div className="text-2xl font-bold">{totalClients}</div>
+          <div className="text-xs text-purple-700">Total Clients</div>
+        </div>
+        <div className="bg-gradient-to-br from-green-100 to-teal-100 rounded-lg p-4 flex flex-col items-center">
+          <TrendingUp className="w-6 h-6 text-green-600 mb-2" />
+          <div className="text-2xl font-bold">{totalConverted}</div>
+          <div className="text-xs text-green-700">Converted</div>
+        </div>
+        <div className="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg p-4 flex flex-col items-center">
+          <TrendingDown className="w-6 h-6 text-blue-600 mb-2" />
+          <div className="text-2xl font-bold">{totalRetained}</div>
+          <div className="text-xs text-blue-700">Retained</div>
+        </div>
+        <div className="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-lg p-4 flex flex-col items-center">
+          <BarChart3 className="w-6 h-6 text-yellow-600 mb-2" />
+          <div className="text-2xl font-bold">{totalNew}</div>
+          <div className="text-xs text-yellow-700">New Clients</div>
+        </div>
+      </div>
+
+      {/* --- Hosted Class Month-on-Month Table --- */}
+      <Card className="bg-white shadow-lg border-0">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-pink-600 to-orange-600 text-white">
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
+            Hosted Class Conversions (Month-on-Month)
+            <Badge variant="secondary" className="bg-white/20 text-white">
+              {hostedClassMoM.length} Months
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <ModernDataTable
+            data={hostedClassMoM}
+            columns={[
+              { key: 'month', header: 'Month', className: 'font-semibold min-w-[120px]' },
+              { key: 'total', header: 'Total Hosted', align: 'center' },
+              { key: 'newClients', header: 'New', align: 'center' },
+              { key: 'converted', header: 'Converted', align: 'center' },
+              { key: 'retained', header: 'Retained', align: 'center' },
+            ]}
+            headerGradient="from-pink-600 to-orange-600"
+            showFooter={false}
+            maxHeight="400px"
+          />
+        </CardContent>
+      </Card>
+
+      {/* --- Membership Performance Table --- */}
       <Card className="bg-white shadow-lg border-0">
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
           <CardTitle className="flex items-center gap-2">
@@ -247,7 +355,7 @@ export const ClientConversionAdvancedMetrics: React.FC<ClientConversionAdvancedM
         </CardContent>
       </Card>
 
-      {/* Trainer Performance Table */}
+      {/* --- Trainer Performance Table --- */}
       <Card className="bg-white shadow-lg border-0">
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-green-600 to-teal-600 text-white">
           <CardTitle className="flex items-center gap-2">
