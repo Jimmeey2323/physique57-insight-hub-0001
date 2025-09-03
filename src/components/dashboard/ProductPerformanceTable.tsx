@@ -5,29 +5,26 @@ import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { ShoppingCart, TrendingUp, TrendingDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
 interface ProductPerformanceTableProps {
   data: SalesData[];
   onRowClick: (row: any) => void;
   selectedMetric?: YearOnYearMetricType;
 }
-
 export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = ({
   data,
   onRowClick,
   selectedMetric: initialMetric = 'revenue'
 }) => {
   const [selectedMetric, setSelectedMetric] = useState<YearOnYearMetricType>(initialMetric);
-
   const monthlyData = useMemo(() => {
     const months = [];
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
+
     // Get current date for dynamic month calculation
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
-    
+
     // Generate last 18 months of data including current month
     for (let i = 17; i >= 0; i--) {
       const date = new Date(currentYear, currentMonth - i, 1);
@@ -42,10 +39,8 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
         quarter: Math.ceil(month / 3)
       });
     }
-    
     return months;
   }, []);
-
   const parseDate = (dateStr: string): Date | null => {
     if (!dateStr) return null;
 
@@ -60,7 +55,6 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
     const date = new Date(dateStr);
     return isNaN(date.getTime()) ? null : date;
   };
-
   const getMetricValue = (items: SalesData[], metric: YearOnYearMetricType) => {
     if (!items.length) return 0;
     switch (metric) {
@@ -93,7 +87,6 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
         return 0;
     }
   };
-
   const formatMetricValue = (value: number, metric: YearOnYearMetricType) => {
     switch (metric) {
       case 'revenue':
@@ -115,7 +108,6 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
         return formatNumber(value);
     }
   };
-
   const processedData = useMemo(() => {
     console.log('Processing product data:', data.length, 'records');
     const productGroups = data.reduce((acc: Record<string, SalesData[]>, item) => {
@@ -177,7 +169,6 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
     console.log('Sample product data:', productData[0]);
     return productData.sort((a, b) => b.metricValue - a.metricValue);
   }, [data, selectedMetric, monthlyData]);
-
   const getGrowthIndicator = (current: number, previous: number) => {
     if (previous === 0 && current === 0) return null;
     if (previous === 0) return <TrendingUp className="w-3 h-3 text-green-500 inline ml-1" />;
@@ -189,7 +180,6 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
     }
     return null;
   };
-
   const totalsRow = useMemo(() => {
     const monthlyTotals: Record<string, number> = {};
     monthlyData.forEach(({
@@ -203,9 +193,7 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
       monthlyValues: monthlyTotals
     };
   }, [processedData, monthlyData, data, selectedMetric]);
-
-  return (
-    <Card className="bg-gradient-to-br from-white via-slate-50/30 to-white border-0 shadow-xl rounded-xl">
+  return <Card className="bg-gradient-to-br from-white via-slate-50/30 to-white border-0 shadow-xl rounded-xl">
       <CardHeader className="pb-4">
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-start">
@@ -228,7 +216,7 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
         <div className="overflow-x-auto rounded-lg">
           <table className="min-w-full bg-white border-t border-gray-200 rounded-lg">
             <thead className="bg-gradient-to-r from-orange-700 to-orange-900 text-white font-semibold text-sm uppercase tracking-wider sticky top-0 z-20">
-              <tr>
+              <tr className="bg-teal-700 text-white">
                 <th className="text-white font-semibold uppercase tracking-wider px-6 py-3 text-left rounded-tl-lg sticky left-0 bg-orange-800 z-30">Product</th>
                 {monthlyData.map(({
                 key,
@@ -276,6 +264,5 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
           </table>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
