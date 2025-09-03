@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import getGoogleSheetData from '@/lib/utils';
+import { useGoogleSheets } from './useGoogleSheets';
 
 export interface LateCancellationLocationRow {
   location: string;
@@ -55,12 +55,10 @@ export function useLateCancellationsData(): UseLateCancellationsDataResult {
     async function fetchData() {
       try {
         const sheetId = '12xbYJQrh5wyYDaFhQrq4L0-YkSSlA6z7nMCb66XEbCQ';
-        const sheetName = 'Late Cancellations';
-        const raw = await getGoogleSheetData(sheetId, sheetName);
-        // TODO: Parse raw data into the 5 tables
+        // TODO: Fetch and parse late cancellations data using useGoogleSheets
+        useGoogleSheets();
         // For now, just set loading false
         setData((d) => ({ ...d, loading: false }));
-      } catch (e: any) {
         setData((d) => ({ ...d, loading: false, error: e.message || 'Failed to load late cancellations data' }));
       }
     }
