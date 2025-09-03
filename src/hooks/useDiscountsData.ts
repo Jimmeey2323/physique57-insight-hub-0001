@@ -19,6 +19,8 @@ export const useDiscountsData = () => {
     if (salesData && salesData.length > 0) {
       try {
         console.log('Processing sales data for discounts...', salesData.length, 'items');
+        // Debug: log first 5 raw sales data rows for troubleshooting
+        console.log('First 5 raw sales data rows:', salesData.slice(0, 5));
         
         const processedData: SalesData[] = salesData.map((item: any) => {
           // Parse date correctly - handle DD/MM/YYYY HH:mm:ss format
@@ -48,12 +50,12 @@ export const useDiscountsData = () => {
           };
 
           // Fix the column names to match the Google Sheets structure exactly
-          const discountAmount = parseNumber(item['Discount Amount -Mrp- Payment Value']);
-          const discountPercentage = parseNumber(item['Discount Percentage - discount amount/mrp*100']);
-          const paymentValue = parseNumber(item['Payment Value']);
-          const mrpPreTax = parseNumber(item['Mrp - Pre Tax']);
-          const mrpPostTax = parseNumber(item['Mrp - Post Tax']);
-          const paymentVAT = parseNumber(item['Payment VAT']);
+          const discountAmount = parseNumber(item.discountAmountMrpPaymentValue);
+          const discountPercentage = parseNumber(item.discountPercentageDiscountAmountMrp100);
+          const paymentValue = parseNumber(item.paymentValue);
+          const mrpPreTax = parseNumber(item.mrpPreTax);
+          const mrpPostTax = parseNumber(item.mrpPostTax);
+          const paymentVAT = parseNumber(item.paymentVat);
           
           // Debug log the raw item to see actual column names
           if (Object.keys(item).length > 0) {
