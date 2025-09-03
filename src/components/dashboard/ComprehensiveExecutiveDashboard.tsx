@@ -260,7 +260,6 @@ export const ComprehensiveExecutiveDashboard = () => {
                   <Eye className="w-4 h-4 mr-2" />
                   Insights
                 </TabsTrigger>
-
                 <TabsTrigger 
                   value="late-cancellations" 
                   className="relative rounded-xl px-4 py-3 font-semibold text-sm transition-all duration-300 ease-out hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-fuchsia-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-50"
