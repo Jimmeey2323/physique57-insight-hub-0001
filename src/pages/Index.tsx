@@ -31,6 +31,8 @@ const Index = () => {
   const handleSectionClick = useCallback((sectionId: string) => {
     if (sectionId === 'class-performance-series') {
       window.open('https://class-performance-series-001.vercel.app/', '_blank');
+    } else if (sectionId === 'late-cancellations') {
+      navigate('/late-cancellations');
     } else {
       navigate(`/${sectionId}`);
     }

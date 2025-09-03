@@ -20,6 +20,15 @@ interface DashboardGridProps {
   onButtonClick?: (buttonId: string) => void;
 }
 const defaultButtons: DashboardButton[] = [{
+}, {
+  id: "late-cancellations",
+  label: "Late Cancellations",
+  description: "Late Cancellation Analytics by Location, Class, Trainer, Product, Member",
+  icon: <Tag size={28} />,
+  color: "text-fuchsia-700",
+  gradient: "from-fuchsia-50 to-fuchsia-100",
+  hoverColor: "hover:border-fuchsia-300",
+  bgGradient: "from-fuchsia-600 to-fuchsia-700"
   id: "executive-summary",
   label: "Executive Summary",
   description: "Strategic Performance Overview & Key Metrics",
