@@ -1,4 +1,5 @@
 
+// Date utility functions for the dashboard
 export const getPreviousMonthDateRange = () => {
   const now = new Date();
   // Get the first day of the previous month

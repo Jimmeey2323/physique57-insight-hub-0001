@@ -26,8 +26,28 @@ export default function FunnelLeads() {
   
   const [activeLocation, setActiveLocation] = useState('all');
   const [filtersCollapsed, setFiltersCollapsed] = useState(true);
+  
+  // Get previous month date range function
+  const getPreviousMonthRange = () => {
+    const now = new Date();
+    const firstDayPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastDayPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    
+    const formatDate = (date: Date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
+    return {
+      start: formatDate(firstDayPreviousMonth),
+      end: formatDate(lastDayPreviousMonth)
+    };
+  };
+  
   const [filters, setFilters] = useState<LeadsFilterOptions>(() => {
-    const previousMonth = getPreviousMonthDateRange();
+    const previousMonth = getPreviousMonthRange();
     return {
       dateRange: previousMonth,
       location: [],
