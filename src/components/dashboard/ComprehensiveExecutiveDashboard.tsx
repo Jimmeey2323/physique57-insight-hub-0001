@@ -231,7 +231,7 @@ export const ComprehensiveExecutiveDashboard = () => {
 
           <CardContent className="p-8">
             <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
-              <TabsList className="bg-white/90 backdrop-blur-sm p-2 rounded-2xl shadow-xl border-0 grid grid-cols-4 w-full max-w-4xl mx-auto overflow-hidden mb-8">
+              <TabsList className="bg-white/90 backdrop-blur-sm p-2 rounded-2xl shadow-xl border-0 grid grid-cols-5 w-full max-w-5xl mx-auto overflow-hidden mb-8">
                 <TabsTrigger 
                   value="overview" 
                   className="relative rounded-xl px-4 py-3 font-semibold text-sm transition-all duration-300 ease-out hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-50"
@@ -259,6 +259,14 @@ export const ComprehensiveExecutiveDashboard = () => {
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   Insights
+                </TabsTrigger>
+
+                <TabsTrigger 
+                  value="late-cancellations" 
+                  className="relative rounded-xl px-4 py-3 font-semibold text-sm transition-all duration-300 ease-out hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-fuchsia-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-50"
+                >
+                  <Clock className="w-4 h-4 mr-2 text-fuchsia-300" />
+                  Late Cancellations
                 </TabsTrigger>
               </TabsList>
 
@@ -342,6 +350,11 @@ export const ComprehensiveExecutiveDashboard = () => {
                       </CardContent>
                     </Card>
                   </div>
+                </TabsContent>
+
+                <TabsContent value="late-cancellations" className="space-y-6 mt-0">
+                  {/** Late Cancellations Tab Content */}
+                  {React.createElement(require('./ExecutiveLateCancellationsTab').default)}
                 </TabsContent>
               </div>
             </Tabs>
