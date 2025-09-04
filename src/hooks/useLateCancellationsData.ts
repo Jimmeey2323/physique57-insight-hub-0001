@@ -59,6 +59,7 @@ export function useLateCancellationsData(): UseLateCancellationsDataResult {
         useGoogleSheets();
         // For now, just set loading false
         setData((d) => ({ ...d, loading: false }));
+      } catch (e) {
         setData((d) => ({ ...d, loading: false, error: e.message || 'Failed to load late cancellations data' }));
       }
     }
