@@ -325,8 +325,8 @@ export const EnhancedYearOnYearTable: React.FC<EnhancedYearOnYearTableProps> = (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border-t border-gray-200 rounded-lg">
             <thead className="bg-gradient-to-r from-purple-700 to-purple-900 text-white font-semibold text-sm uppercase tracking-wider px-4 py-2 sticky top-0 z-20">
-              <tr className="bg-gradient-to-r from-blue-700 to-indigo-900 text-white font-semibold text-sm uppercase tracking-wider px-4 py-2 rounded-md">
-                <th className="bg-gradient-to-r from-blue-700 to-blue-900 text-white font-semibold text-sm uppercase tracking-wider px-4 py-2 rounded-none">
+              <tr className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white font-semibold text-sm uppercase tracking-wider px-4 py-2 rounded-md bg-blue-950">
+                <th className="bg-gradient-to-r from-blue-800 to-blue-800 text-white font-semibold text-sm uppercase tracking-wider px-4 py-2 rounded-none">
                   Product/Category
                 </th>
                 {monthlyData.map(({
