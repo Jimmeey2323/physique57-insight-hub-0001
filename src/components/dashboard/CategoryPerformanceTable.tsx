@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { SalesData, YearOnYearMetricType } from '@/types/dashboard';
 import { YearOnYearMetricTabs } from './YearOnYearMetricTabs';
@@ -6,29 +5,26 @@ import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { FolderOpen, TrendingUp, TrendingDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
 interface CategoryPerformanceTableProps {
   data: SalesData[];
   onRowClick: (row: any) => void;
   selectedMetric?: YearOnYearMetricType;
 }
-
 export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> = ({
   data,
   onRowClick,
   selectedMetric: initialMetric = 'revenue'
 }) => {
   const [selectedMetric, setSelectedMetric] = useState<YearOnYearMetricType>(initialMetric);
-
   const monthlyData = useMemo(() => {
     const months = [];
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
+
     // Get current date for dynamic month calculation
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
-    
+
     // Generate last 18 months of data including current month
     for (let i = 17; i >= 0; i--) {
       const date = new Date(currentYear, currentMonth - i, 1);
@@ -43,10 +39,8 @@ export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> =
         quarter: Math.ceil(month / 3)
       });
     }
-    
     return months;
   }, []);
-
   const parseDate = (dateStr: string): Date | null => {
     if (!dateStr) return null;
 
@@ -61,7 +55,6 @@ export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> =
     const date = new Date(dateStr);
     return isNaN(date.getTime()) ? null : date;
   };
-
   const getMetricValue = (items: SalesData[], metric: YearOnYearMetricType) => {
     if (!items.length) return 0;
     switch (metric) {
@@ -96,7 +89,6 @@ export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> =
         return 0;
     }
   };
-
   const formatMetricValue = (value: number, metric: YearOnYearMetricType) => {
     switch (metric) {
       case 'revenue':
@@ -119,7 +111,6 @@ export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> =
         return formatNumber(value);
     }
   };
-
   const processedData = useMemo(() => {
     console.log('Processing category data:', data.length, 'records');
     const categoryGroups = data.reduce((acc: Record<string, SalesData[]>, item) => {
@@ -180,7 +171,6 @@ export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> =
     console.log('Sample category data:', categoryData[0]);
     return categoryData.sort((a, b) => b.metricValue - a.metricValue);
   }, [data, selectedMetric, monthlyData]);
-
   const getGrowthIndicator = (current: number, previous: number) => {
     if (previous === 0 && current === 0) return null;
     if (previous === 0) return <TrendingUp className="w-3 h-3 text-green-500 inline ml-1" />;
@@ -207,9 +197,7 @@ export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> =
       monthlyValues: monthlyTotals
     };
   }, [processedData, monthlyData, data, selectedMetric]);
-
-  return (
-    <Card className="bg-gradient-to-br from-white via-slate-50/30 to-white border-0 shadow-xl rounded-xl">
+  return <Card className="bg-gradient-to-br from-white via-slate-50/30 to-white border-0 shadow-xl rounded-xl">
       <CardHeader className="pb-4">
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-start">
@@ -232,21 +220,21 @@ export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> =
         <div className="overflow-x-auto rounded-lg">
           <table className="min-w-full bg-white border-t border-gray-200 rounded-lg">
             <thead className="bg-gradient-to-r from-orange-700 to-orange-900 text-white font-semibold text-sm uppercase tracking-wider sticky top-0 z-20">
-              <tr>
-                <th className="text-white font-semibold uppercase tracking-wider px-6 py-3 text-left rounded-tl-lg sticky left-0 bg-orange-800 z-30">Category</th>
+              <tr className="bg-indigo-900">
+                <th className="text-white font-semibold uppercase tracking-wider px-6 py-3 text-left rounded-tl-lg sticky left-0 z-30 bg-violet-900">Category</th>
                 {monthlyData.map(({
                 key,
                 display
-              }) => <th key={key} className="text-white font-semibold text-xs uppercase tracking-wider px-3 py-2 bg-orange-800 border-l border-orange-600 min-w-32">
+              }) => <th key={key} className="text-white font-semibold text-xs uppercase tracking-wider px-3 py-2 border-l border-indigo-600 min-w-32 bg-violet-900">
                     <div className="flex flex-col">
                       <span className="text-sm">{display.split(' ')[0]}</span>
-                      <span className="text-orange-200 text-xs">{display.split(' ')[1]}</span>
+                      <span className="text-xs text-yellow-300">{display.split(' ')[1]}</span>
                     </div>
                   </th>)}
               </tr>
             </thead>
             <tbody>
-              {processedData.map(item => <tr key={item.category} className="hover:bg-orange-50 cursor-pointer border-b border-gray-100 transition-colors duration-200" onClick={() => onRowClick(item)}>
+              {processedData.map(item => <tr key={item.category} onClick={() => onRowClick(item)} className="cursor-pointer border-b border-gray-100 transition-colors duration-200 bg-slate-50">
                   <td className="px-6 py-3 text-sm font-medium text-gray-900 sticky left-0 bg-white border-r border-gray-200 min-w-60">
                     <div className="flex items-center gap-4 min-w-60">
                       <span className="font-bold text-slate-700">{item.category}</span>
@@ -265,13 +253,13 @@ export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> =
                       </td>;
               })}
                 </tr>)}
-              <tr className="bg-gradient-to-r from-orange-50 to-orange-100 border-t-2 border-orange-200 font-bold">
-                <td className="px-6 py-3 text-sm font-bold text-orange-900 sticky left-0 bg-orange-100 border-r border-orange-200">
+              <tr className="bg-gradient-to-r from-indigo-50 to-indigo-100 border-t-4 border-indigo-800 font-bold">
+                <td className="px-6 py-3 text-sm font-bold text-indigo-900 sticky left-0 border-r border-indigo-200 bg-slate-50">
                   TOTAL
                 </td>
                 {monthlyData.map(({
                 key
-              }) => <td key={key} className="px-3 py-3 text-center text-sm text-orange-900 font-mono font-bold border-l border-orange-200">
+              }) => <td key={key} className="px-3 py-3 text-center text-sm text-indigo-900 font-mono font-bold border-l border-indigo-200">
                     {formatMetricValue(totalsRow.monthlyValues[key] || 0, selectedMetric)}
                   </td>)}
               </tr>
@@ -279,6 +267,5 @@ export const CategoryPerformanceTable: React.FC<CategoryPerformanceTableProps> =
           </table>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };

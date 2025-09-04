@@ -216,25 +216,25 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
         <div className="overflow-x-auto rounded-lg">
           <table className="min-w-full bg-white border-t border-gray-200 rounded-lg">
             <thead className="bg-gradient-to-r from-orange-700 to-orange-900 text-white font-semibold text-sm uppercase tracking-wider sticky top-0 z-20">
-              <tr className="bg-teal-700 text-white">
-                <th className="text-white font-semibold uppercase tracking-wider px-6 py-3 text-left rounded-tl-lg sticky left-0 bg-orange-800 z-30">Product</th>
+              <tr className="text-white bg-indigo-900">
+                <th className="text-white font-semibold uppercase tracking-wider px-6 py-3 text-left rounded-tl-lg sticky left-0 z-30 bg-indigo-900">Product</th>
                 {monthlyData.map(({
                 key,
                 display
-              }) => <th key={key} className="text-white font-semibold text-xs uppercase tracking-wider px-3 py-2 bg-orange-800 border-l border-orange-600 min-w-32">
+              }) => <th key={key} className="text-white font-semibold text-xs uppercase tracking-wider px-3 py-2 border-l border-indigo-600 min-w-32 bg-indigo-900">
                     <div className="flex flex-col">
                       <span className="text-sm">{display.split(' ')[0]}</span>
-                      <span className="text-orange-200 text-xs">{display.split(' ')[1]}</span>
+                      <span className="text-xs text-yellow-300">{display.split(' ')[1]}</span>
                     </div>
                   </th>)}
               </tr>
             </thead>
             <tbody>
-              {processedData.map((item, index) => <tr key={item.product} className="hover:bg-orange-50 cursor-pointer border-b border-gray-100 transition-colors duration-200" onClick={() => onRowClick(item)}>
+              {processedData.map((item, index) => <tr key={item.product} onClick={() => onRowClick(item)} className="hover:bg-gray-50 cursor-pointer border-b border-gray-100 transition-colors duration-200">
                   <td className="px-6 py-3 text-sm font-medium text-gray-900 sticky left-0 bg-white border-r border-gray-200 min-w-60">
                     <div className="flex items-center gap-4 min-w-60">
                       <span className="font-bold text-slate-700">#{index + 1}</span>
-                      <span className="text-orange-700 font-medium">{item.product}</span>
+                      <span className="text-zinc-950 font-bold">{item.product}</span>
                     </div>
                   </td>
                   {monthlyData.map(({
@@ -250,13 +250,13 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
                       </td>;
               })}
                 </tr>)}
-              <tr className="bg-gradient-to-r from-orange-50 to-orange-100 border-t-2 border-orange-200 font-bold">
-                <td className="px-6 py-3 text-sm font-bold text-orange-900 sticky left-0 bg-orange-100 border-r border-orange-200">
+              <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-t-4 border-gray-900 font-bold bg-slate-100">
+                <td className="px-6 py-3 text-sm font-bold text-gray-900 sticky left-0 border-r border-gray-200 bg-slate-100">
                   TOTAL
                 </td>
                 {monthlyData.map(({
                 key
-              }) => <td key={key} className="px-3 py-3 text-center text-sm text-orange-900 font-mono font-bold border-l border-orange-200">
+              }) => <td key={key} className="px-3 py-3 text-center text-sm text-indigo-900 font-mono font-bold border-l border-gray-200 bg-slate-200">
                     {formatMetricValue(totalsRow.monthlyValues[key] || 0, selectedMetric)}
                   </td>)}
               </tr>
