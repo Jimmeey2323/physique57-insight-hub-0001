@@ -237,6 +237,20 @@ export interface InteractiveChartProps {
   type: 'revenue' | 'performance' | 'sessions' | 'newClients';
 }
 
+export interface LateCancellationsData {
+}
+
+export interface LateCancellationsFilterOptions {
+  dateRange: {
+    start: string;
+    end: string;
+  };
+  location: string[];
+  trainer: string[];
+  classType: string[];
+  productType: string[];
+}
+
 export interface DrillDownModalProps {
   isOpen: boolean;
   onClose: () => void;
