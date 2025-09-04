@@ -216,8 +216,8 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
         <div className="overflow-x-auto rounded-lg">
           <table className="min-w-full bg-white border-t border-gray-200 rounded-lg">
             <thead className="bg-gradient-to-r from-orange-700 to-orange-900 text-white font-semibold text-sm uppercase tracking-wider sticky top-0 z-20">
-              <tr className="bg-teal-700 text-white">
-                <th className="text-white font-semibold uppercase tracking-wider px-6 py-3 text-left rounded-tl-lg sticky left-0 bg-orange-800 z-30">Product</th>
+              <tr className="text-white bg-indigo-900">
+                <th className="text-white font-semibold uppercase tracking-wider px-6 py-3 text-left rounded-tl-lg sticky left-0 z-30 bg-indigo-900">Product</th>
                 {monthlyData.map(({
                 key,
                 display
@@ -234,7 +234,7 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
                   <td className="px-6 py-3 text-sm font-medium text-gray-900 sticky left-0 bg-white border-r border-gray-200 min-w-60">
                     <div className="flex items-center gap-4 min-w-60">
                       <span className="font-bold text-slate-700">#{index + 1}</span>
-                      <span className="text-orange-700 font-medium">{item.product}</span>
+                      <span className="text-zinc-950 font-bold">{item.product}</span>
                     </div>
                   </td>
                   {monthlyData.map(({
@@ -250,7 +250,7 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
                       </td>;
               })}
                 </tr>)}
-              <tr className="bg-gradient-to-r from-orange-50 to-orange-100 border-t-2 border-orange-200 font-bold">
+              <tr className="bg-gradient-to-r from-orange-50 to-orange-100 border-t-2 border-orange-200 font-bold bg-slate-200">
                 <td className="px-6 py-3 text-sm font-bold text-orange-900 sticky left-0 bg-orange-100 border-r border-orange-200">
                   TOTAL
                 </td>
