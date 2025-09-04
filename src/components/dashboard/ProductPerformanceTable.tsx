@@ -221,10 +221,10 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
                 {monthlyData.map(({
                 key,
                 display
-              }) => <th key={key} className="text-white font-semibold text-xs uppercase tracking-wider px-3 py-2 bg-orange-800 border-l border-orange-600 min-w-32">
+              }) => <th key={key} className="text-white font-semibold text-xs uppercase tracking-wider px-3 py-2 border-l border-indigo-600 min-w-32 bg-indigo-900">
                     <div className="flex flex-col">
                       <span className="text-sm">{display.split(' ')[0]}</span>
-                      <span className="text-orange-200 text-xs">{display.split(' ')[1]}</span>
+                      <span className="text-xs text-yellow-300">{display.split(' ')[1]}</span>
                     </div>
                   </th>)}
               </tr>
@@ -250,13 +250,13 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
                       </td>;
               })}
                 </tr>)}
-              <tr className="bg-gradient-to-r from-orange-50 to-orange-100 border-t-2 border-orange-200 font-bold bg-slate-200">
-                <td className="px-6 py-3 text-sm font-bold text-orange-900 sticky left-0 bg-orange-100 border-r border-orange-200">
+              <tr className="bg-gradient-to-r from-orange-50 to-orange-100 border-t-2 border-orange-200 font-bold bg-slate-100">
+                <td className="px-6 py-3 text-sm font-bold text-orange-900 sticky left-0 border-r border-orange-200 bg-slate-100">
                   TOTAL
                 </td>
                 {monthlyData.map(({
                 key
-              }) => <td key={key} className="px-3 py-3 text-center text-sm text-orange-900 font-mono font-bold border-l border-orange-200">
+              }) => <td key={key} className="px-3 py-3 text-center text-sm text-indigo-900 font-mono font-bold border-l border-gray-600 bg-slate-200">
                     {formatMetricValue(totalsRow.monthlyValues[key] || 0, selectedMetric)}
                   </td>)}
               </tr>
