@@ -250,8 +250,8 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
                       </td>;
               })}
                 </tr>)}
-              <tr className="bg-gradient-to-r from-orange-50 to-orange-100 border-t-2 border-orange-200 font-bold bg-slate-100">
-                <td className="px-6 py-3 text-sm font-bold text-orange-900 sticky left-0 border-r border-orange-200 bg-slate-100">
+              <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-t-4 border-gray-900 font-bold bg-slate-100">
+                <td className="px-6 py-3 text-sm font-bold text-gray-900 sticky left-0 border-r border-gray-200 bg-slate-100">
                   TOTAL
                 </td>
                 {monthlyData.map(({
