@@ -256,7 +256,7 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
                 </td>
                 {monthlyData.map(({
                 key
-              }) => <td key={key} className="px-3 py-3 text-center text-sm text-indigo-900 font-mono font-bold border-l border-gray-600 bg-slate-200">
+              }) => <td key={key} className="px-3 py-3 text-center text-sm text-indigo-900 font-mono font-bold border-l border-gray-200 bg-slate-200">
                     {formatMetricValue(totalsRow.monthlyValues[key] || 0, selectedMetric)}
                   </td>)}
               </tr>
