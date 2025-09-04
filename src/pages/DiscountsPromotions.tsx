@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ProfessionalLoader } from '@/components/dashboard/ProfessionalLoader';
+import { RefinedLoader } from '@/components/ui/RefinedLoader';
 import { useDiscountsData } from '@/hooks/useDiscountsData';
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import { DiscountFilterSection } from '@/components/dashboard/DiscountFilterSection';
@@ -11,7 +11,6 @@ import { DiscountMonthOnMonthTable } from '@/components/dashboard/DiscountMonthO
 import { DiscountYearOnYearTable } from '@/components/dashboard/DiscountYearOnYearTable';
 import { DiscountDataTable } from '@/components/dashboard/DiscountDataTable';
 import { DrillDownModal } from '@/components/dashboard/DrillDownModal';
-import { ComprehensiveDiscountsSection } from '@/components/dashboard/ComprehensiveDiscountsSection';
 import { EnhancedStickyNotes } from '@/components/ui/EnhancedStickyNotes';
 import { Button } from '@/components/ui/button';
 import { Home, TrendingDown, Percent, DollarSign, Package, Target, FileText } from 'lucide-react';
@@ -21,16 +20,14 @@ import { getPreviousMonthDateRange } from '@/utils/dateUtils';
 // import { DataDebugger } from '@/components/debug/DataDebugger'; // Debug component removed
 
 interface DiscountFilters {
-  dateRange?: { from?: Date; to?: Date };
-  location?: string;
-  paymentMethod?: string;
-  category?: string;
-  product?: string;
-  soldBy?: string;
-  minDiscountAmount?: number;
-  maxDiscountAmount?: number;
-  minDiscountPercent?: number;
-  maxDiscountPercent?: number;
+  dateRange: { start: string; end: string };
+  paymentMethod: string[];
+  category: string[];
+  product: string[];
+  soldBy: string[];
+  minDiscount?: number;
+  maxDiscount?: number;
+  discountRange: string[];
 }
 
 const DiscountsPromotions: React.FC = () => {
@@ -49,9 +46,16 @@ const DiscountsPromotions: React.FC = () => {
     
     return {
       dateRange: {
-        from: sixMonthsAgo,
-        to: today
-      }
+        start: sixMonthsAgo.toISOString().split('T')[0],
+        end: today.toISOString().split('T')[0]
+      },
+      paymentMethod: [],
+      category: [],
+      product: [],
+      soldBy: [],
+      minDiscount: undefined,
+      maxDiscount: undefined,
+      discountRange: []
     };
   });
 
@@ -70,10 +74,10 @@ const DiscountsPromotions: React.FC = () => {
     
     let result = data;
 
-    // Apply date range filter from DiscountFilterSection
-    if (filters.dateRange?.from || filters.dateRange?.to) {
-      const startDate = filters.dateRange.from ? new Date(filters.dateRange.from) : null;
-      const endDate = filters.dateRange.to ? new Date(filters.dateRange.to) : null;
+    // Apply date range filter
+    if (filters.dateRange.start || filters.dateRange.end) {
+      const startDate = filters.dateRange.start ? new Date(filters.dateRange.start) : null;
+      const endDate = filters.dateRange.end ? new Date(filters.dateRange.end) : null;
 
       result = result.filter(item => {
         if (!item.paymentDate) return false;
@@ -98,41 +102,29 @@ const DiscountsPromotions: React.FC = () => {
       result = result.filter(item => item.calculatedLocation === selectedLocation);
     }
 
-    // Apply filters from DiscountFilterSection
-    if (filters.location) {
-      result = result.filter(item => item.calculatedLocation === filters.location);
+    // Apply other filters
+    if (filters.paymentMethod.length) {
+      result = result.filter(item => filters.paymentMethod.includes(item.paymentMethod));
     }
 
-    if (filters.paymentMethod) {
-      result = result.filter(item => item.paymentMethod === filters.paymentMethod);
+    if (filters.category.length) {
+      result = result.filter(item => filters.category.includes(item.cleanedCategory));
     }
 
-    if (filters.category) {
-      result = result.filter(item => item.cleanedCategory === filters.category);
+    if (filters.product.length) {
+      result = result.filter(item => filters.product.includes(item.cleanedProduct));
     }
 
-    if (filters.product) {
-      result = result.filter(item => item.cleanedProduct === filters.product);
+    if (filters.soldBy.length) {
+      result = result.filter(item => filters.soldBy.includes(item.soldBy));
     }
 
-    if (filters.soldBy) {
-      result = result.filter(item => item.soldBy === filters.soldBy);
+    if (filters.minDiscount !== undefined) {
+      result = result.filter(item => (item.discountAmount || 0) >= filters.minDiscount!);
     }
 
-    if (filters.minDiscountAmount !== undefined) {
-      result = result.filter(item => (item.discountAmount || 0) >= filters.minDiscountAmount!);
-    }
-
-    if (filters.maxDiscountAmount !== undefined) {
-      result = result.filter(item => (item.discountAmount || 0) <= filters.maxDiscountAmount!);
-    }
-
-    if (filters.minDiscountPercent !== undefined) {
-      result = result.filter(item => (item.discountPercentage || 0) >= filters.minDiscountPercent!);
-    }
-
-    if (filters.maxDiscountPercent !== undefined) {
-      result = result.filter(item => (item.discountPercentage || 0) <= filters.maxDiscountPercent!);
+    if (filters.maxDiscount !== undefined) {
+      result = result.filter(item => (item.discountAmount || 0) <= filters.maxDiscount!);
     }
 
     return result;
@@ -169,16 +161,16 @@ const DiscountsPromotions: React.FC = () => {
     };
   }, [filteredData]);
 
-  const handleDrillDown = (title: string, data: any[]) => {
+  const handleDrillDown = (title: string, data: any[], type: string) => {
     setDrillDownModal({
       isOpen: true,
-      data: { title, rawData: data, type: 'discount' },
-      type: 'discount'
+      data: { title, rawData: data, type },
+      type
     });
   };
 
   if (loading) {
-    return <ProfessionalLoader variant="sales" subtitle="Loading discount and promotional analysis..." />;
+    return <RefinedLoader subtitle="Loading discount and promotional analysis..." />;
   }
 
   if (error) {
@@ -350,10 +342,36 @@ const DiscountsPromotions: React.FC = () => {
             onLocationChange={setSelectedLocation}
           />
 
-          <ComprehensiveDiscountsSection
+          <DiscountMetricCards
             data={filteredData}
             filters={filters}
             onDrillDown={handleDrillDown}
+          />
+
+          <DiscountInteractiveCharts
+            data={filteredData}
+            filters={filters}
+          />
+
+          <DiscountInteractiveTopBottomLists
+            data={filteredData}
+            filters={filters}
+            onDrillDown={handleDrillDown}
+          />
+
+          <DiscountMonthOnMonthTable
+            data={filteredData}
+            filters={filters}
+          />
+
+          <DiscountYearOnYearTable
+            data={filteredData}
+            filters={filters}
+          />
+
+          <DiscountDataTable
+            data={filteredData}
+            filters={filters}
           />
         </main>
       </div>
