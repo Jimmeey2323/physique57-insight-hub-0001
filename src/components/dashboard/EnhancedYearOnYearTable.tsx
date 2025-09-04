@@ -6,8 +6,6 @@ import { ChevronDown, ChevronRight, RefreshCw, Filter, Calendar, TrendingUp, Dow
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { NeonIcon } from '@/components/ui/NeonIcon';
-
 const groupDataByCategory = (data: SalesData[]) => {
   return data.reduce((acc: Record<string, any>, item) => {
     const category = item.cleanedCategory || 'Uncategorized';
@@ -22,7 +20,6 @@ const groupDataByCategory = (data: SalesData[]) => {
     return acc;
   }, {});
 };
-
 export const EnhancedYearOnYearTable: React.FC<EnhancedYearOnYearTableProps> = ({
   data,
   filters = {
@@ -298,16 +295,19 @@ export const EnhancedYearOnYearTable: React.FC<EnhancedYearOnYearTableProps> = (
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-3">
-                <NeonIcon icon={<Calendar className="w-6 h-6 text-cyan-400" />} />
+              <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-blue-600" />
                 Year-on-Year Performance Analysis
               </CardTitle>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="text-sm text-gray-600 mt-1">
                 Monthly comparison between 2024 and 2025 with alternating year display
               </p>
             </div>
+            
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleRefresh} className="flex items-center gap-2 hover:bg-cyan-900/10 hover:text-cyan-400 border-cyan-400">
+              
+              
+              <Button variant="outline" size="sm" onClick={handleRefresh} className="flex items-center gap-2 hover:bg-purple-50 hover:text-purple-700">
                 <RefreshCw className="w-4 h-4" />
                 Refresh
               </Button>
@@ -323,15 +323,15 @@ export const EnhancedYearOnYearTable: React.FC<EnhancedYearOnYearTableProps> = (
 
       <CardContent className="p-0">
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-2xl shadow-md border-0">
-            <thead className="sticky top-0 z-20">
-              <tr className="bg-gradient-to-r from-cyan-900 via-blue-900 to-indigo-900 text-white font-semibold text-sm uppercase tracking-wider rounded-t-2xl">
-                <th className="bg-gradient-to-r from-cyan-900 via-blue-900 to-indigo-900 text-white font-bold text-lg px-6 py-4 rounded-tl-2xl sticky left-0 z-30 min-w-[200px] border-0">Product/Category</th>
+          <table className="min-w-full bg-white rounded-2xl shadow-md border border-gray-300">
+            <thead className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white font-semibold text-sm uppercase tracking-wider sticky top-0 z-20">
+              <tr className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white font-semibold text-sm uppercase tracking-wider rounded-t-2xl">
+                <th className="bg-black text-white font-bold text-lg px-6 py-4 rounded-tl-2xl sticky left-0 z-30">Product/Category</th>
                 {monthlyData.map(({ key, display }) => (
-                  <th key={key} className="text-white font-semibold text-xs uppercase tracking-wider px-4 py-3 border-0">
+                  <th key={key} className="text-white font-semibold text-xs uppercase tracking-wider px-4 py-3">
                     <div className="flex flex-col">
                       <span className="text-base">{display.split(' ')[0]}</span>
-                      <span className="text-cyan-200 text-xs">{display.split(' ')[1]}</span>
+                      <span className="text-blue-200 text-xs">{display.split(' ')[1]}</span>
                     </div>
                   </th>
                 ))}
@@ -340,36 +340,36 @@ export const EnhancedYearOnYearTable: React.FC<EnhancedYearOnYearTableProps> = (
             <tbody>
               {processedData.map(categoryGroup => (
                 <React.Fragment key={categoryGroup.category}>
-                  <tr onClick={() => handleGroupToggle(categoryGroup.category)} className={`group transition-colors duration-200 ease-in-out cursor-pointer ${localCollapsedGroups.has(categoryGroup.category) ? 'bg-gradient-to-r from-cyan-900 via-blue-900 to-indigo-900 text-white' : 'bg-gray-50 text-gray-700'}`}>
-                    <td className="py-4 font-bold sticky left-0 z-10 px-6 min-w-[200px] text-md border-0">
+                  <tr onClick={() => handleGroupToggle(categoryGroup.category)} className="bg-gray-50 border-b-4 border-black group transition-colors duration-200 ease-in-out">
+                    <td className="py-4 font-bold text-gray-700 bg-gray-50 sticky left-0 z-10 px-6 min-w-80 text-md">
                       <div className="flex justify-between items-center min-w-full">
-                        {localCollapsedGroups.has(categoryGroup.category) ? <ChevronRight className="w-4 h-4 mr-2 text-cyan-200 transition-transform duration-200" /> : <ChevronDown className="w-4 h-4 mr-2 text-cyan-400 transition-transform duration-200" />}
+                        {localCollapsedGroups.has(categoryGroup.category) ? <ChevronRight className="w-4 h-4 mr-2 text-gray-500 transition-transform duration-200" /> : <ChevronDown className="w-4 h-4 mr-2 text-gray-500 transition-transform duration-200" />}
                         {categoryGroup.category}
-                        <Badge variant="secondary" className="ml-auto text-sm text-white bg-cyan-900 min-w-32 text-right py-1 capitalize rounded-lg px-[12px]">
+                        <Badge variant="secondary" className="ml-auto text-sm text-white bg-blue-900 min-w-32 text-right py-1 capitalize rounded-lg px-[12px]">
                           {categoryGroup.products.length} products
                         </Badge>
                       </div>
                     </td>
                     {monthlyData.map(({ key }) => (
-                      <td key={key} className="px-4 py-4 text-center font-semibold text-gray-100 text-sm border-0">
+                      <td key={key} className="px-4 py-4 text-center font-semibold text-gray-600 text-sm">
                         {formatMetricValue(categoryGroup.monthlyValues[key] || 0, selectedMetric)}
                       </td>
                     ))}
                   </tr>
                   {!localCollapsedGroups.has(categoryGroup.category) && categoryGroup.products.map(product => (
-                    <tr key={`${categoryGroup.category}-${product.product}`} className="bg-white transition-colors duration-200">
-                      <td className="px-8 py-3 text-md font-bold sticky left-0 bg-white z-10 border-0">
+                    <tr key={`${categoryGroup.category}-${product.product}`} className="bg-white border-b border-black transition-colors duration-200">
+                      <td className="px-8 py-3 text-md font-bold text-gray-700 sticky left-0 bg-white z-10">
                         <div className="flex items-center justify-between">
                           <span>{product.product}</span>
                           {['atv', 'auv', 'asv', 'upt'].includes(selectedMetric) && (
-                            <Badge variant="outline" className="text-xs ml-2 border-cyan-200 text-cyan-700">
+                            <Badge variant="outline" className="text-xs ml-2 border-blue-200 text-blue-700">
                               Avg: {formatMetricValue(product.averages[selectedMetric as keyof typeof product.averages] || 0, selectedMetric)}
                             </Badge>
                           )}
                         </div>
                       </td>
                       {monthlyData.map(({ key }) => (
-                        <td key={key} className="px-4 py-3 text-center text-sm text-gray-600 font-mono border-0">
+                        <td key={key} className="px-4 py-3 text-center text-sm text-gray-600 font-mono">
                           {formatMetricValue(product.monthlyValues[key] || 0, selectedMetric)}
                         </td>
                       ))}
@@ -378,10 +378,10 @@ export const EnhancedYearOnYearTable: React.FC<EnhancedYearOnYearTableProps> = (
                 </React.Fragment>
               ))}
               {/* Totals row */}
-              <tr className="bg-gradient-to-r from-cyan-900 via-blue-900 to-indigo-900 font-bold">
-                <td className="px-6 py-4 text-lg font-bold text-white sticky left-0 bg-gradient-to-r from-cyan-900 via-blue-900 to-indigo-900 border-0">TOTAL</td>
+              <tr className="bg-gray-100 border-t-4 border-indigo-900 font-bold">
+                <td className="px-6 py-4 text-lg font-bold text-indigo-900 sticky left-0 bg-gray-100 border-r border-indigo-900">TOTAL</td>
                 {monthlyData.map(({ key }) => (
-                  <td key={key} className="px-4 py-4 text-center text-lg font-bold text-white border-0">
+                  <td key={key} className="px-4 py-4 text-center text-lg font-bold text-indigo-900 border-t-4 border-indigo-900">
                     {/* You may want to calculate totals here if needed */}
                   </td>
                 ))}
